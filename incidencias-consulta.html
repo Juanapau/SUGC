@@ -374,16 +374,21 @@ let incidenciasFiltradas = [];
 
 // Configuración (cargada desde localStorage)
 let CONFIG = {
-urlIncidencias: ''
+urlIncidencias: 'https://script.google.com/macros/s/AKfycbwnCHIHNum-8uCHLbuE5NvwJeVmVMF6hCLWOAQQRUOwsU5GK_vpkrxifDFlMat1tP-z/exec'
 };
 
 // Cargar configuración
 window.addEventListener('load', function() {
 const configGuardada = localStorage.getItem('censaConfig');
 if (configGuardada) {
-CONFIG = JSON.parse(configGuardada);
-console.log('✅ Configuración cargada:', CONFIG);
+const configTemp = JSON.parse(configGuardada);
+// Solo sobrescribir si tiene valor
+if (configTemp.urlIncidencias) {
+CONFIG.urlIncidencias = configTemp.urlIncidencias;
 }
+console.log('✅ Configuración actualizada desde localStorage');
+}
+console.log('📋 URL Incidencias:', CONFIG.urlIncidencias);
 
 cargarIncidencias();
 });
