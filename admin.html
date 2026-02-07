@@ -2123,6 +2123,71 @@
                 padding: 15px;
             }
         }
+
+/* ========================================== */
+/* BARRA DE USUARIO PARA ADMIN               */
+/* ========================================== */
+
+.user-info-bar-admin {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    flex: 1;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.user-avatar-admin {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+}
+
+.user-details-admin h3 {
+    color: #000000;
+    font-size: 0.95em;
+    margin-bottom: 2px;
+    font-weight: 600;
+}
+
+.user-details-admin p {
+    color: #2a5298;
+    font-size: 0.75em;
+    font-weight: 600;
+}
+
+/* Ocultar búsqueda global si se decide no usarla */
+.global-search {
+    display: none !important;
+}
+
+/* Responsive para móvil */
+@media (max-width: 768px) {
+    .user-info-bar-admin {
+        padding: 8px 15px;
+    }
+    
+    .user-avatar-admin {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .user-details-admin h3 {
+        font-size: 0.85em;
+    }
+    
+    .user-details-admin p {
+        font-size: 0.7em;
+    }
+}
+        
     </style>
 </head>
 <body>
@@ -2136,24 +2201,21 @@
             <p>Centro Educativo Nuestra Señora de la Altagracia (CENSA)</p>
         </header>
 
-        <!-- Barra Superior: Búsqueda Global y Notificaciones -->
-        <div class="top-bar">
-            <div class="global-search">
-                <span class="search-icon">🔍</span>
-                <input type="text" 
-                       id="globalSearchInput" 
-                       placeholder="Buscar estudiante, incidencia, reunión..." 
-                       oninput="realizarBusquedaGlobal()"
-                       onfocus="mostrarResultadosBusqueda()">
-                <span class="clear-icon" id="clearSearch" onclick="limpiarBusquedaGlobal()">✕</span>
-                <div class="global-search-results" id="globalSearchResults"></div>
-            </div>
-            
-            <button class="notificaciones-btn" onclick="toggleNotificacionesSheets()" title="Notificaciones">
-                🔔
-                <span class="notif-badge" id="notifCounter" style="display:none;">0</span>
-            </button>
+<!-- Barra Superior: Usuario y Notificaciones -->
+<div class="top-bar">
+    <div class="user-info-bar-admin">
+        <div class="user-avatar-admin">👑</div>
+        <div class="user-details-admin">
+            <h3 id="userNameAdmin">Juana Paulino</h3>
+            <p id="userCargoAdmin">Administrador</p>
         </div>
+    </div>
+    
+    <button class="notificaciones-btn" onclick="toggleNotificacionesSheets()" title="Notificaciones">
+        🔔
+        <span class="notif-badge" id="notifCounter" style="display:none;">0</span>
+    </button>
+</div>
 
         <!-- Overlay de Notificaciones -->
         <div class="notif-overlay" id="notifOverlay"></div>
@@ -2556,5 +2618,31 @@
             console.log('💡 Sistema UGC puede instalarse como app');
         });
     </script>
+
+<script>
+// Cargar datos del usuario autenticado
+window.addEventListener('load', function() {
+    const usuarioData = localStorage.getItem('usuarioUGC');
+    
+    if (usuarioData) {
+        const usuario = JSON.parse(usuarioData);
+        
+        // Actualizar nombre y cargo
+        const userName = document.getElementById('userNameAdmin');
+        const userCargo = document.getElementById('userCargoAdmin');
+        
+        if (userName) {
+            userName.textContent = usuario.nombre;
+        }
+        
+        if (userCargo && usuario.cargo) {
+            userCargo.textContent = usuario.cargo;
+        }
+        
+        console.log('✅ Usuario cargado:', usuario);
+    }
+});
+</script>
+    
 </body>
 </html>
