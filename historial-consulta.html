@@ -75,13 +75,13 @@ gap: 12px;
 
 .timeline {
 position: relative;
-padding-left: 40px;
+padding-left: 30px;
 }
 
 .timeline::before {
 content: '';
 position: absolute;
-left: 15px;
+left: 8px;
 top: 0;
 bottom: 0;
 width: 3px;
@@ -100,7 +100,7 @@ border-left: 4px solid #2a5298;
 .timeline-item::before {
 content: '';
 position: absolute;
-left: -47px;
+left: -38px;
 top: 20px;
 width: 15px;
 height: 15px;
@@ -203,13 +203,21 @@ header { flex-direction: column; text-align: center; }
 
 <script src="./auth-guard.js"></script>
 <script>
-let CONFIG = { urlIncidencias: '', urlTardanzas: '' };
+let CONFIG = { 
+urlIncidencias: 'https://script.google.com/macros/s/AKfycbwnCHIHNum-8uCHLbuE5NvwJeVmVMF6hCLWOAQQRUOwsU5GK_vpkrxifDFlMat1tP-z/exec',
+urlTardanzas: 'https://script.google.com/macros/s/AKfycbxI2JCRc-f0MdokDyepK_UOPf_gAbjYpCWzqe6ShqhRIP7uurohjBdswChKHaExsT2Riw/exec'
+};
 
 window.addEventListener('load', function() {
 const configGuardada = localStorage.getItem('censaConfig');
 if (configGuardada) {
-CONFIG = JSON.parse(configGuardada);
+const configTemp = JSON.parse(configGuardada);
+if (configTemp.urlIncidencias) CONFIG.urlIncidencias = configTemp.urlIncidencias;
+if (configTemp.urlTardanzas) CONFIG.urlTardanzas = configTemp.urlTardanzas;
+console.log('✅ Configuración actualizada desde localStorage');
 }
+console.log('📜 URLs:', CONFIG);
+
 cargarHistorial();
 });
 
