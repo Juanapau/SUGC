@@ -517,7 +517,19 @@ console.log('📊 Estadísticas cargadas');
 
 function verModulo(modulo) {
 console.log('👁️ Abriendo módulo:', modulo);
-alert(`📊 Módulo de ${modulo}\n\n🔒 Vista de solo lectura activada.\n\nEn este módulo podrás VER todos los registros pero NO podrás crear, editar ni eliminar.`);
+
+const paginas = {
+'incidencias': 'incidencias-consulta.html',
+'tardanzas': 'tardanzas-consulta.html',
+'estadisticas': 'estadisticas-consulta.html',
+'historial': 'historial-consulta.html'
+};
+
+if (paginas[modulo]) {
+window.location.href = paginas[modulo];
+} else {
+alert(`📊 Módulo de ${modulo}\n\n🔒 Vista de solo lectura activada.`);
+}
 }
 
 // ==========================================
