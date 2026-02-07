@@ -27,15 +27,18 @@ margin: 0 auto;
 header {
 background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
 color: white;
-padding: 25px 30px;
+padding: 20px 30px;
 border-radius: 15px;
 margin-bottom: 30px;
 box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.header-top {
 display: flex;
 justify-content: space-between;
 align-items: center;
+gap: 20px;
 flex-wrap: wrap;
-gap: 15px;
 }
 
 .header-left {
@@ -52,26 +55,58 @@ border: 3px solid #2a5298;
 }
 
 .header-title h1 {
-font-size: 1.8em;
-margin-bottom: 5px;
+font-size: 1.5em;
+margin-bottom: 3px;
 }
 
 .header-title p {
 color: #4a9eff;
-font-size: 0.9em;
+font-size: 0.85em;
 }
 
-.user-info {
-background: rgba(42, 82, 152, 0.2);
-padding: 10px 20px;
-border-radius: 10px;
+.header-right {
 display: flex;
 align-items: center;
 gap: 15px;
-border: 1px solid rgba(42, 82, 152, 0.4);
 }
 
-.user-avatar {
+.notification-icon {
+width: 45px;
+height: 45px;
+background: rgba(42, 82, 152, 0.3);
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 1.3em;
+cursor: pointer;
+transition: all 0.3s;
+border: 2px solid rgba(42, 82, 152, 0.5);
+}
+
+.notification-icon:hover {
+background: rgba(42, 82, 152, 0.5);
+transform: scale(1.1);
+}
+
+.user-bar {
+background: white;
+padding: 12px 20px;
+border-radius: 10px;
+margin-top: 15px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.user-info-bar {
+display: flex;
+align-items: center;
+gap: 12px;
+}
+
+.user-avatar-bar {
 width: 40px;
 height: 40px;
 background: #2a5298;
@@ -79,17 +114,19 @@ border-radius: 50%;
 display: flex;
 align-items: center;
 justify-content: center;
-font-size: 1.3em;
+font-size: 1.2em;
 }
 
-.user-details h3 {
+.user-details-bar h3 {
+color: #000000;
 font-size: 0.95em;
 margin-bottom: 2px;
 }
 
-.user-details p {
+.user-details-bar p {
+color: #2a5298;
 font-size: 0.75em;
-color: #4a9eff;
+font-weight: 600;
 }
 
 .btn-logout {
@@ -107,34 +144,6 @@ transition: all 0.3s;
 .btn-logout:hover {
 transform: translateY(-2px);
 box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-}
-
-.alert-consulta {
-background: white;
-border-radius: 15px;
-padding: 20px 25px;
-margin-bottom: 30px;
-display: flex;
-align-items: center;
-gap: 15px;
-box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-border-left: 5px solid #fbbf24;
-}
-
-.alert-consulta .icon {
-font-size: 2.5em;
-}
-
-.alert-consulta .content h3 {
-color: #000000;
-font-size: 1.1em;
-margin-bottom: 5px;
-}
-
-.alert-consulta .content p {
-color: #666;
-font-size: 0.9em;
-line-height: 1.6;
 }
 
 .modules-grid {
@@ -228,13 +237,102 @@ transform: translateY(-2px);
 box-shadow: 0 5px 15px rgba(42,82,152,0.4);
 }
 
-@media (max-width: 768px) {
-header {
-flex-direction: column;
+/* MODAL DE CONFIRMACIÓN */
+.modal-confirm {
+display: none;
+position: fixed;
+z-index: 9999;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0,0,0,0.7);
+align-items: center;
+justify-content: center;
+}
+
+.modal-confirm-content {
+background: white;
+border-radius: 15px;
+max-width: 450px;
+width: 90%;
+box-shadow: 0 12px 48px rgba(0,0,0,0.4);
+animation: slideIn 0.3s ease;
+overflow: hidden;
+}
+
+@keyframes slideIn {
+from {
+transform: translateY(-50px);
+opacity: 0;
+}
+to {
+transform: translateY(0);
+opacity: 1;
+}
+}
+
+.modal-confirm-header {
+background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+color: white;
+padding: 20px 25px;
 text-align: center;
 }
 
-.header-left {
+.modal-confirm-header h3 {
+font-size: 1.3em;
+}
+
+.modal-confirm-body {
+padding: 30px 25px;
+text-align: center;
+}
+
+.modal-confirm-body p {
+color: #666;
+font-size: 1.05em;
+line-height: 1.6;
+}
+
+.modal-confirm-buttons {
+display: flex;
+gap: 15px;
+margin-top: 25px;
+}
+
+.btn-confirm {
+flex: 1;
+padding: 12px 30px;
+border: none;
+border-radius: 8px;
+font-size: 1em;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+}
+
+.btn-confirm-yes {
+background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+color: white;
+}
+
+.btn-confirm-yes:hover {
+transform: translateY(-2px);
+box-shadow: 0 5px 15px rgba(42,82,152,0.4);
+}
+
+.btn-confirm-no {
+background: linear-gradient(135deg, #000000 0%, #333333 100%);
+color: white;
+}
+
+.btn-confirm-no:hover {
+transform: translateY(-2px);
+box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+@media (max-width: 768px) {
+.header-top {
 flex-direction: column;
 }
 
@@ -249,6 +347,7 @@ grid-template-columns: 1fr;
 <div class="container">
 <!-- HEADER -->
 <header>
+<div class="header-top">
 <div class="header-left">
 <img src="./logo.png" alt="Logo" onerror="this.style.display='none'">
 <div class="header-title">
@@ -257,26 +356,27 @@ grid-template-columns: 1fr;
 </div>
 </div>
 
-<div class="user-info">
-<div class="user-avatar">👤</div>
-<div class="user-details">
+<div class="header-right">
+<div class="notification-icon">
+🔔
+</div>
+</div>
+</div>
+
+<!-- BARRA DE USUARIO -->
+<div class="user-bar">
+<div class="user-info-bar">
+<div class="user-avatar-bar">👤</div>
+<div class="user-details-bar">
 <h3 id="userName">Usuario de Consulta</h3>
 <p id="userCargo">🔍 Acceso de solo lectura</p>
 </div>
-<button class="btn-logout" onclick="cerrarSesion()">
+</div>
+<button class="btn-logout" onclick="mostrarConfirmacionSalir()">
 🚪 Salir
 </button>
 </div>
 </header>
-
-<!-- ALERTA DE CONSULTA -->
-<div class="alert-consulta">
-<div class="icon">🔒</div>
-<div class="content">
-<h3>Modo Solo Consulta Activado</h3>
-<p>Tienes acceso de <strong>solo lectura</strong> a: Incidencias, Tardanzas, Estadísticas e Historial. No podrás crear, editar ni eliminar registros. Para solicitar permisos de administrador, contacta a la Unidad de Gestión de Convivencia.</p>
-</div>
-</div>
 
 <!-- MÓDULOS -->
 <div class="modules-grid">
@@ -370,6 +470,26 @@ grid-template-columns: 1fr;
 </div>
 </div>
 
+<!-- MODAL DE CONFIRMACIÓN -->
+<div class="modal-confirm" id="modalConfirm">
+<div class="modal-confirm-content">
+<div class="modal-confirm-header">
+<h3>⚠️ Confirmar Cierre de Sesión</h3>
+</div>
+<div class="modal-confirm-body">
+<p>¿Estás seguro de que deseas cerrar sesión?</p>
+<div class="modal-confirm-buttons">
+<button class="btn-confirm btn-confirm-yes" onclick="cerrarSesion()">
+Sí, Cerrar Sesión
+</button>
+<button class="btn-confirm btn-confirm-no" onclick="cerrarModal()">
+Cancelar
+</button>
+</div>
+</div>
+</div>
+</div>
+
 <script>
 // ==========================================
 // VERIFICAR AUTENTICACIÓN
@@ -424,11 +544,19 @@ console.log('📊 Estadísticas cargadas');
 
 function verModulo(modulo) {
 console.log('👁️ Abriendo módulo:', modulo);
-
 alert(`📊 Módulo de ${modulo}\n\n🔒 Vista de solo lectura activada.\n\nEn este módulo podrás VER todos los registros pero NO podrás crear, editar ni eliminar.`);
+}
 
-// TODO: Redirigir a página específica del módulo
-// window.location.href = `${modulo}-consulta.html`;
+// ==========================================
+// MODAL DE CONFIRMACIÓN
+// ==========================================
+
+function mostrarConfirmacionSalir() {
+document.getElementById('modalConfirm').style.display = 'flex';
+}
+
+function cerrarModal() {
+document.getElementById('modalConfirm').style.display = 'none';
 }
 
 // ==========================================
@@ -436,17 +564,20 @@ alert(`📊 Módulo de ${modulo}\n\n🔒 Vista de solo lectura activada.\n\nEn e
 // ==========================================
 
 function cerrarSesion() {
-const confirmar = confirm('¿Estás seguro de que deseas cerrar sesión?');
-
-if (confirmar) {
 localStorage.removeItem('usuarioUGC');
 console.log('👋 Sesión cerrada');
 window.location.href = 'index.html';
 }
+
+// Cerrar modal al hacer clic fuera
+window.onclick = function(event) {
+const modal = document.getElementById('modalConfirm');
+if (event.target == modal) {
+cerrarModal();
+}
 }
 
 console.log('📊 Sistema de consulta cargado');
-console.log('📋 Módulos disponibles: Incidencias, Tardanzas, Estadísticas, Historial');
 </script>
 
 </body>
