@@ -2125,58 +2125,104 @@
         }
 
 /* ========================================== */
-/* BARRA DE USUARIO PARA ADMIN               */
+/* BARRA DE USUARIO COMPACTA                 */
 /* ========================================== */
+
+/* Quitar círculo del logo */
+.logo-header {
+    border-radius: 0 !important;
+    border: none !important;
+}
+
+header img {
+    border-radius: 0 !important;
+    border: none !important;
+}
+
+/* Barra superior compacta */
+.top-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+    align-items: center;
+    background: white;
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
 
 .user-info-bar-admin {
     display: flex;
     align-items: center;
-    gap: 12px;
-    background: white;
-    padding: 10px 20px;
-    border-radius: 10px;
+    gap: 10px;
     flex: 1;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .user-avatar-admin {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2em;
+    font-size: 1.1em;
 }
 
 .user-details-admin h3 {
     color: #000000;
-    font-size: 0.95em;
+    font-size: 0.9em;
     margin-bottom: 2px;
     font-weight: 600;
+    line-height: 1.2;
 }
 
 .user-details-admin p {
     color: #2a5298;
-    font-size: 0.75em;
+    font-size: 0.7em;
     font-weight: 600;
+    line-height: 1.2;
 }
 
-/* Ocultar búsqueda global si se decide no usarla */
+/* Botón Salir */
+.btn-logout-admin {
+    background: linear-gradient(135deg, #000000 0%, #333333 100%);
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-weight: 600;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.btn-logout-admin:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* Ocultar búsqueda global */
 .global-search {
     display: none !important;
 }
 
-/* Responsive para móvil */
+/* Responsive barra usuario */
 @media (max-width: 768px) {
-    .user-info-bar-admin {
+    .top-bar {
         padding: 8px 15px;
+        gap: 10px;
+    }
+    
+    .user-info-bar-admin {
+        padding: 0;
     }
     
     .user-avatar-admin {
-        width: 35px;
-        height: 35px;
+        width: 32px;
+        height: 32px;
+        font-size: 1em;
     }
     
     .user-details-admin h3 {
@@ -2184,7 +2230,12 @@
     }
     
     .user-details-admin p {
-        font-size: 0.7em;
+        font-size: 0.65em;
+    }
+    
+    .btn-logout-admin {
+        padding: 6px 14px;
+        font-size: 0.8em;
     }
 }
         
@@ -2207,9 +2258,13 @@
         <div class="user-avatar-admin">👑</div>
         <div class="user-details-admin">
             <h3 id="userNameAdmin">Juana Paulino</h3>
-            <p id="userCargoAdmin">Administrador</p>
+            <p id="userCargoAdmin">Administrador del Sistema</p>
         </div>
     </div>
+    
+    <button class="btn-logout-admin" onclick="cerrarSesionUGC()">
+        🚪 Salir
+    </button>
     
     <button class="notificaciones-btn" onclick="toggleNotificacionesSheets()" title="Notificaciones">
         🔔
