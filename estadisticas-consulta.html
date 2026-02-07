@@ -85,7 +85,7 @@ background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 padding: 25px;
 border-radius: 12px;
 text-align: center;
-border-left: 5px solid #2a5298;
+border-top: 4px solid #2a5298;
 box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 transition: all 0.3s;
 }
@@ -213,13 +213,23 @@ header { flex-direction: column; text-align: center; }
 
 <script src="./auth-guard.js"></script>
 <script>
-let CONFIG = { urlIncidencias: '', urlTardanzas: '', urlEstudiantes: '' };
+let CONFIG = { 
+urlIncidencias: 'https://script.google.com/macros/s/AKfycbwnCHIHNum-8uCHLbuE5NvwJeVmVMF6hCLWOAQQRUOwsU5GK_vpkrxifDFlMat1tP-z/exec',
+urlTardanzas: 'https://script.google.com/macros/s/AKfycbxI2JCRc-f0MdokDyepK_UOPf_gAbjYpCWzqe6ShqhRIP7uurohjBdswChKHaExsT2Riw/exec',
+urlEstudiantes: 'https://script.google.com/macros/s/AKfycby-ceKgHZzTxQzcVcNiOWaN5aNDoqtIlihVcOZAp0_5hIVcv115GKHtfdjFPq43ttCEuA/exec'
+};
 
 window.addEventListener('load', function() {
 const configGuardada = localStorage.getItem('censaConfig');
 if (configGuardada) {
-CONFIG = JSON.parse(configGuardada);
+const configTemp = JSON.parse(configGuardada);
+if (configTemp.urlIncidencias) CONFIG.urlIncidencias = configTemp.urlIncidencias;
+if (configTemp.urlTardanzas) CONFIG.urlTardanzas = configTemp.urlTardanzas;
+if (configTemp.urlEstudiantes) CONFIG.urlEstudiantes = configTemp.urlEstudiantes;
+console.log('✅ Configuración actualizada desde localStorage');
 }
+console.log('📊 URLs:', CONFIG);
+
 cargarEstadisticas();
 });
 
