@@ -14,7 +14,7 @@ console.log('🔐 Iniciando sistema de autenticación UGC...');
 
 const CONFIG_AUTH = {
     paginaLogin: 'login.html',
-    paginaAdmin: 'index.html',
+    paginaAdmin: 'admin.html',
     paginaConsulta: 'consulta.html',
     sesionKey: 'usuarioUGC'
 };
