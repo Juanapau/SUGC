@@ -26,6 +26,8 @@ box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 display: flex;
 justify-content: space-between;
 align-items: center;
+flex-wrap: wrap;
+gap: 15px;
 }
 
 .header-left {
@@ -99,7 +101,7 @@ transform: translateY(-2px);
 }
 
 .container {
-max-width: 1400px;
+max-width: 1200px;
 margin: 30px auto;
 padding: 0 20px;
 }
@@ -134,7 +136,7 @@ line-height: 1.5;
 
 .modules-grid {
 display: grid;
-grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 gap: 25px;
 margin-top: 30px;
 }
@@ -152,7 +154,7 @@ cursor: pointer;
 .module-card:hover {
 transform: translateY(-5px);
 box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-border-color: #2a5298;
+border-color: #dc2626;
 }
 
 .module-header {
@@ -165,7 +167,7 @@ margin-bottom: 15px;
 .module-icon {
 width: 60px;
 height: 60px;
-background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+background: linear-gradient(135deg, #000000 0%, #dc2626 100%);
 border-radius: 12px;
 display: flex;
 align-items: center;
@@ -212,7 +214,7 @@ text-transform: uppercase;
 .btn-view {
 width: 100%;
 padding: 12px;
-background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+background: linear-gradient(135deg, #000000 0%, #dc2626 100%);
 color: white;
 border: none;
 border-radius: 10px;
@@ -225,13 +227,12 @@ transition: all 0.3s;
 
 .btn-view:hover {
 transform: translateY(-2px);
-box-shadow: 0 6px 12px rgba(42, 82, 152, 0.3);
+box-shadow: 0 6px 12px rgba(220, 38, 38, 0.3);
 }
 
 @media (max-width: 768px) {
 .header {
 flex-direction: column;
-gap: 15px;
 text-align: center;
 }
 
@@ -272,11 +273,11 @@ grid-template-columns: 1fr;
 <div class="icon">🔒</div>
 <div class="content">
 <h3>Modo Solo Consulta Activado</h3>
-<p>Tienes acceso de <strong>solo lectura</strong> a todos los módulos. No podrás crear, editar ni eliminar registros. Para solicitar permisos de administrador, contacta a la Unidad de Gestión de Convivencia.</p>
+<p>Tienes acceso de <strong>solo lectura</strong> a: Incidencias, Tardanzas, Estadísticas e Historial. No podrás crear, editar ni eliminar registros. Para solicitar permisos de administrador, contacta a la Unidad de Gestión de Convivencia.</p>
 </div>
 </div>
 
-<!-- MÓDULOS -->
+<!-- MÓDULOS (SOLO LOS 4 PERMITIDOS) -->
 <div class="modules-grid">
 <!-- INCIDENCIAS -->
 <div class="module-card" onclick="verModulo('incidencias')">
@@ -300,28 +301,6 @@ grid-template-columns: 1fr;
 <button class="btn-view">👁️ Ver Registros</button>
 </div>
 
-<!-- CONTACTOS -->
-<div class="module-card" onclick="verModulo('contactos')">
-<div class="module-header">
-<div class="module-icon">📱</div>
-<div class="module-info">
-<h3>Contactos</h3>
-<p>Padres y tutores</p>
-</div>
-</div>
-<div class="module-stats">
-<div class="stat-item">
-<span class="number" id="statContactos">---</span>
-<span class="label">Contactos</span>
-</div>
-<div class="stat-item">
-<span class="number" id="statContactosCompletos">---</span>
-<span class="label">Completos</span>
-</div>
-</div>
-<button class="btn-view">👁️ Ver Registros</button>
-</div>
-
 <!-- TARDANZAS -->
 <div class="module-card" onclick="verModulo('tardanzas')">
 <div class="module-header">
@@ -339,28 +318,6 @@ grid-template-columns: 1fr;
 <div class="stat-item">
 <span class="number" id="statTardanzasHoy">---</span>
 <span class="label">Hoy</span>
-</div>
-</div>
-<button class="btn-view">👁️ Ver Registros</button>
-</div>
-
-<!-- ESTUDIANTES -->
-<div class="module-card" onclick="verModulo('estudiantes')">
-<div class="module-header">
-<div class="module-icon">👨‍🎓</div>
-<div class="module-info">
-<h3>Estudiantes</h3>
-<p>Base de datos</p>
-</div>
-</div>
-<div class="module-stats">
-<div class="stat-item">
-<span class="number" id="statEstudiantes">---</span>
-<span class="label">Estudiantes</span>
-</div>
-<div class="stat-item">
-<span class="number" id="statCursos">---</span>
-<span class="label">Cursos</span>
 </div>
 </div>
 <button class="btn-view">👁️ Ver Registros</button>
@@ -421,29 +378,26 @@ window.addEventListener('load', function() {
 const usuarioData = localStorage.getItem('usuarioUGC');
 
 if (!usuarioData) {
-// No hay sesión activa, redirigir a login
 window.location.href = 'login.html';
 return;
 }
 
 const usuario = JSON.parse(usuarioData);
 
-// Verificar que sea usuario de consulta
 if (usuario.rol !== 'consulta') {
-console.log('⚠️ Este usuario no tiene rol de consulta');
-// Redirigir según su rol
 if (usuario.rol === 'administrador') {
-window.location.href = 'index.html';
-}
+// Admin puede ver consulta
+console.log('ℹ️ Administrador en vista de consulta');
+} else {
+window.location.href = 'login.html';
 return;
 }
+}
 
-// Mostrar nombre del usuario
 document.getElementById('userName').textContent = usuario.nombre;
 
 console.log('✅ Usuario autenticado:', usuario);
 
-// Cargar estadísticas (simuladas por ahora)
 cargarEstadisticas();
 });
 
@@ -453,19 +407,11 @@ cargarEstadisticas();
 
 function cargarEstadisticas() {
 // Simular carga de datos
-// En producción, estos datos vendrían de Google Sheets
-
 document.getElementById('statIncidencias').textContent = '124';
 document.getElementById('statIncidenciasMes').textContent = '18';
 
-document.getElementById('statContactos').textContent = '387';
-document.getElementById('statContactosCompletos').textContent = '312';
-
 document.getElementById('statTardanzas').textContent = '56';
 document.getElementById('statTardanzasHoy').textContent = '3';
-
-document.getElementById('statEstudiantes').textContent = '401';
-document.getElementById('statCursos').textContent = '18';
 
 console.log('📊 Estadísticas cargadas');
 }
@@ -477,10 +423,9 @@ console.log('📊 Estadísticas cargadas');
 function verModulo(modulo) {
 console.log('👁️ Abriendo módulo:', modulo);
 
-// Por ahora mostrar alerta
 alert(`📊 Módulo de ${modulo}\n\n🔒 Vista de solo lectura activada.\n\nEn este módulo podrás VER todos los registros pero NO podrás crear, editar ni eliminar.`);
 
-// En producción, redirigir a la página correspondiente:
+// TODO: Redirigir a página específica del módulo
 // window.location.href = `${modulo}-consulta.html`;
 }
 
@@ -499,6 +444,7 @@ window.location.href = 'login.html';
 }
 
 console.log('📊 Sistema de consulta cargado');
+console.log('📋 Módulos disponibles: Incidencias, Tardanzas, Estadísticas, Historial');
 </script>
 
 </body>
