@@ -187,47 +187,6 @@ color: #6b7280;
 font-size: 0.85em;
 }
 
-.demo-credentials {
-background: #fffbeb;
-border: 2px solid #fbbf24;
-border-radius: 10px;
-padding: 15px;
-margin-top: 20px;
-}
-
-.demo-credentials h3 {
-color: #92400e;
-font-size: 0.9em;
-margin-bottom: 10px;
-display: flex;
-align-items: center;
-gap: 8px;
-}
-
-.demo-item {
-background: white;
-padding: 10px;
-border-radius: 6px;
-margin-bottom: 8px;
-font-size: 0.85em;
-}
-
-.demo-item:last-child {
-margin-bottom: 0;
-}
-
-.demo-item strong {
-color: #1f2937;
-}
-
-.demo-item code {
-background: #f3f4f6;
-padding: 2px 6px;
-border-radius: 4px;
-color: #dc2626;
-font-family: 'Courier New', monospace;
-}
-
 .loading {
 display: inline-block;
 width: 20px;
@@ -305,18 +264,6 @@ autocomplete="current-password"
 Iniciar Sesión
 </button>
 </form>
-
-<div class="demo-credentials">
-<h3>🔓 Credenciales de Prueba</h3>
-<div class="demo-item">
-<strong>Administrador:</strong><br>
-Usuario: <code>admin</code> | Contraseña: <code>admin123</code>
-</div>
-<div class="demo-item">
-<strong>Solo Consulta:</strong><br>
-Usuario: <code>consulta</code> | Contraseña: <code>consulta123</code>
-</div>
-</div>
 </div>
 
 <div class="login-footer">
@@ -331,15 +278,38 @@ Usuario: <code>consulta</code> | Contraseña: <code>consulta123</code>
 // ==========================================
 
 const USUARIOS = {
-'admin': {
+// ADMINISTRADOR
+'jpaulino': {
 password: 'admin123',
 rol: 'administrador',
-nombre: 'Administrador del Sistema'
+nombre: 'Juana Paulino',
+cargo: 'Administrador del Sistema'
 },
-'consulta': {
-password: 'consulta123',
+
+// USUARIOS DE CONSULTA
+'wcaraballo': {
+password: 'consultaw123',
 rol: 'consulta',
-nombre: 'Usuario de Consulta'
+nombre: 'Wenlly Caraballo',
+cargo: 'Director Académico'
+},
+'gduran': {
+password: 'consultag123',
+rol: 'consulta',
+nombre: 'Glennys M. Durán',
+cargo: 'Coordinadora Pedagógica'
+},
+'ybatista': {
+password: 'consultay123',
+rol: 'consulta',
+nombre: 'Yernibel Batista',
+cargo: 'Directora Regente'
+},
+'afernandez': {
+password: 'consultaa123',
+rol: 'consulta',
+nombre: 'Anabel Fernández',
+cargo: 'Orientadora Escolar'
 }
 };
 
@@ -350,7 +320,7 @@ nombre: 'Usuario de Consulta'
 document.getElementById('loginForm').addEventListener('submit', function(e) {
 e.preventDefault();
 
-const usuario = document.getElementById('usuario').value.trim();
+const usuario = document.getElementById('usuario').value.trim().toLowerCase();
 const password = document.getElementById('password').value;
 
 const btnLogin = document.getElementById('btnLogin');
@@ -387,6 +357,7 @@ const datosUsuario = {
 usuario: usuario,
 rol: USUARIOS[usuario].rol,
 nombre: USUARIOS[usuario].nombre,
+cargo: USUARIOS[usuario].cargo,
 loginTime: new Date().toISOString()
 };
 
@@ -397,8 +368,8 @@ btnLogin.innerHTML = '✅ Acceso concedido';
 
 console.log('✅ Login exitoso:', datosUsuario);
 console.log('👤 Rol:', datosUsuario.rol);
+console.log('💼 Cargo:', datosUsuario.cargo);
 
-// ✅ CORREGIDO: Redirigir según el rol
 setTimeout(() => {
 if (datosUsuario.rol === 'administrador') {
 console.log('🔀 Redirigiendo a admin.html');
@@ -455,6 +426,7 @@ document.getElementById('loginForm').dispatchEvent(new Event('submit'));
 });
 
 console.log('🔐 Sistema de login cargado');
+console.log('👥 Usuarios configurados:', Object.keys(USUARIOS).length);
 console.log('📝 Usuarios disponibles:', Object.keys(USUARIOS));
 </script>
 
