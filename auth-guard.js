@@ -1,20 +1,20 @@
 // ==========================================
-// SISTEMA DE AUTENTICACIÓN UGC - CORREGIDO
-// Versión 2.1 - Con rutas corregidas
+// SISTEMA DE AUTENTICACIÓN UGC - FINAL
+// Versión 3.0 - Sin agregar elementos al header
 // ==========================================
 
 (function() {
 'use strict';
 
-console.log('🔐 Iniciando sistema de autenticación UGC v2.1...');
+console.log('🔐 Iniciando sistema de autenticación UGC v3.0...');
 
 // ==========================================
 // CONFIGURACIÓN
 // ==========================================
 
 const CONFIG_AUTH = {
-paginaLogin: 'index.html',  // ✅ Login es index.html
-paginaAdmin: 'admin.html',  // ✅ Sistema admin es admin.html
+paginaLogin: 'index.html',
+paginaAdmin: 'admin.html',
 paginaConsulta: 'consulta.html',
 sesionKey: 'usuarioUGC'
 };
@@ -71,16 +71,49 @@ if (!usuario) return;
 
 console.log('🎨 Configurando interfaz para:', usuario.rol);
 
-// Mostrar info del usuario en el header
-mostrarInfoUsuario(usuario);
+// Actualizar datos de usuario en elementos existentes
+actualizarDatosUsuario(usuario);
 
 // Si es usuario de consulta, deshabilitar controles
 if (usuario.rol === 'consulta') {
 console.log('🔒 Aplicando modo solo lectura...');
 setTimeout(() => {
 deshabilitarControlesEdicion();
-mostrarBannerSoloLectura();
 }, 500);
+}
+}
+
+// ==========================================
+// ACTUALIZAR DATOS DE USUARIO
+// ==========================================
+
+function actualizarDatosUsuario(usuario) {
+// Para admin.html
+const userNameAdmin = document.getElementById('userNameAdmin');
+const userCargoAdmin = document.getElementById('userCargoAdmin');
+
+if (userNameAdmin) {
+userNameAdmin.textContent = usuario.nombre;
+console.log('✅ Nombre de usuario actualizado (admin)');
+}
+
+if (userCargoAdmin && usuario.cargo) {
+userCargoAdmin.textContent = usuario.cargo;
+console.log('✅ Cargo de usuario actualizado (admin)');
+}
+
+// Para consulta.html
+const userName = document.getElementById('userName');
+const userCargo = document.getElementById('userCargo');
+
+if (userName) {
+userName.textContent = usuario.nombre;
+console.log('✅ Nombre de usuario actualizado (consulta)');
+}
+
+if (userCargo && usuario.cargo) {
+userCargo.textContent = '💼 ' + usuario.cargo;
+console.log('✅ Cargo de usuario actualizado (consulta)');
 }
 }
 
@@ -144,158 +177,6 @@ console.log('✅ Controles deshabilitados');
 }
 
 // ==========================================
-// MOSTRAR BANNER DE SOLO LECTURA
-// ==========================================
-
-function mostrarBannerSoloLectura() {
-// Verificar si ya existe
-if (document.getElementById('bannerSoloLectura')) return;
-
-const banner = document.createElement('div');
-banner.id = 'bannerSoloLectura';
-banner.style.cssText = `
-position: fixed;
-top: 0;
-left: 0;
-right: 0;
-background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-color: #78350f;
-padding: 12px 20px;
-text-align: center;
-font-weight: 600;
-font-size: 0.9em;
-z-index: 999999;
-box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-animation: slideDown 0.5s ease-out;
-`;
-
-banner.innerHTML = `
-<span style="font-size: 1.2em; margin-right: 8px;">🔒</span>
-<strong>MODO SOLO LECTURA</strong> - 
-No puedes crear, editar ni eliminar registros. 
-Para solicitar permisos de administrador, contacta a la Unidad de Gestión de Convivencia.
-`;
-
-document.body.insertBefore(banner, document.body.firstChild);
-
-// Agregar animación
-const style = document.createElement('style');
-style.textContent = `
-@keyframes slideDown {
-from {
-opacity: 0;
-transform: translateY(-100%);
-}
-to {
-opacity: 1;
-transform: translateY(0);
-}
-}
-`;
-document.head.appendChild(style);
-
-console.log('✅ Banner de solo lectura mostrado');
-}
-
-// ==========================================
-// MOSTRAR INFO DE USUARIO
-// ==========================================
-
-function mostrarInfoUsuario(usuario) {
-// Buscar header
-const header = document.querySelector('header, .header, .navbar, .top-bar');
-
-if (!header) {
-console.log('⚠️ No se encontró header, creando info en body');
-crearInfoUsuarioFlotante(usuario);
-return;
-}
-
-// Crear elemento de info
-const userInfo = document.createElement('div');
-userInfo.id = 'userInfoUGC';
-userInfo.style.cssText = `
-display: flex;
-align-items: center;
-gap: 12px;
-background: rgba(255,255,255,0.15);
-padding: 8px 16px;
-border-radius: 20px;
-margin-left: auto;
-backdrop-filter: blur(10px);
-`;
-
-const rolEmoji = usuario.rol === 'administrador' ? '👑' : '👤';
-const rolColor = usuario.rol === 'administrador' ? '#fbbf24' : '#60a5fa';
-const rolTexto = usuario.rol === 'administrador' ? 'Administrador' : 'Solo Consulta';
-
-userInfo.innerHTML = `
-<span style="font-size: 1.5em;">${rolEmoji}</span>
-<div style="text-align: left; line-height: 1.3;">
-<div style="font-size: 0.85em; font-weight: 600; color: white;">
-${usuario.nombre}
-</div>
-<div style="font-size: 0.7em; color: ${rolColor};">
-${rolTexto}
-</div>
-</div>
-<button onclick="cerrarSesionUGC()" 
-style="background: #dc2626; color: white; border: none; 
-padding: 6px 14px; border-radius: 8px; cursor: pointer; 
-font-size: 0.8em; font-weight: 600; transition: all 0.3s;"
-onmouseover="this.style.background='#991b1b'"
-onmouseout="this.style.background='#dc2626'">
-🚪 Salir
-</button>
-`;
-
-header.appendChild(userInfo);
-console.log('✅ Info de usuario agregada al header');
-}
-
-function crearInfoUsuarioFlotante(usuario) {
-const userInfo = document.createElement('div');
-userInfo.id = 'userInfoUGC';
-userInfo.style.cssText = `
-position: fixed;
-top: 20px;
-right: 20px;
-z-index: 999998;
-background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-color: white;
-padding: 12px 20px;
-border-radius: 15px;
-box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-display: flex;
-align-items: center;
-gap: 12px;
-`;
-
-const rolEmoji = usuario.rol === 'administrador' ? '👑' : '👤';
-const rolTexto = usuario.rol === 'administrador' ? 'Admin' : 'Consulta';
-
-userInfo.innerHTML = `
-<span style="font-size: 1.5em;">${rolEmoji}</span>
-<div style="text-align: left; line-height: 1.3;">
-<div style="font-size: 0.85em; font-weight: 600;">
-${usuario.nombre}
-</div>
-<div style="font-size: 0.7em; opacity: 0.8;">
-${rolTexto}
-</div>
-</div>
-<button onclick="cerrarSesionUGC()" 
-style="background: #dc2626; color: white; border: none; 
-padding: 6px 12px; border-radius: 6px; cursor: pointer; 
-font-size: 0.75em; font-weight: 600;">
-Salir
-</button>
-`;
-
-document.body.appendChild(userInfo);
-}
-
-// ==========================================
 // MOSTRAR ALERTA DE PERMISOS
 // ==========================================
 
@@ -307,14 +188,13 @@ alert('🔒 Acción No Permitida\n\nNo tienes permisos para realizar esta acció
 // FUNCIONES GLOBALES
 // ==========================================
 
-// ✅ CORREGIDO: Cerrar sesión
+// Cerrar sesión
 window.cerrarSesionUGC = function() {
 const confirmar = confirm('¿Estás seguro de que deseas cerrar sesión?');
 
 if (confirmar) {
 localStorage.removeItem(CONFIG_AUTH.sesionKey);
 console.log('👋 Sesión cerrada');
-// ✅ Redirigir a index.html (que es el login)
 window.location.href = 'index.html';
 }
 };
@@ -375,7 +255,7 @@ configurarInterfazSegunRol(usuario);
 }
 }
 
-console.log('✅ Sistema de autenticación UGC v2.1 cargado');
+console.log('✅ Sistema de autenticación UGC v3.0 cargado');
 console.log('📝 Configuración:');
 console.log('  - Login:', CONFIG_AUTH.paginaLogin);
 console.log('  - Admin:', CONFIG_AUTH.paginaAdmin);
