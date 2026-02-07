@@ -268,13 +268,21 @@ header { flex-direction: column; text-align: center; }
 <script>
 let datosTardanzas = [];
 let tardanzasFiltradas = [];
-let CONFIG = { urlTardanzas: '' };
+let CONFIG = { 
+urlTardanzas: 'https://script.google.com/macros/s/AKfycbxI2JCRc-f0MdokDyepK_UOPf_gAbjYpCWzqe6ShqhRIP7uurohjBdswChKHaExsT2Riw/exec'
+};
 
 window.addEventListener('load', function() {
 const configGuardada = localStorage.getItem('censaConfig');
 if (configGuardada) {
-CONFIG = JSON.parse(configGuardada);
+const configTemp = JSON.parse(configGuardada);
+if (configTemp.urlTardanzas) {
+CONFIG.urlTardanzas = configTemp.urlTardanzas;
 }
+console.log('✅ Configuración actualizada desde localStorage');
+}
+console.log('⏰ URL Tardanzas:', CONFIG.urlTardanzas);
+
 cargarTardanzas();
 });
 
