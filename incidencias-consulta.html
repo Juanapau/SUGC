@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Incidencias - Consulta</title>
+<link rel="icon" type="image/png" href="./logo.png">
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+min-height: 100vh;
+padding: 20px;
+}
+
+.container {
+max-width: 1400px;
+margin: 0 auto;
+}
+
+header {
+background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+color: white;
+padding: 20px 30px;
+border-radius: 15px;
+margin-bottom: 25px;
+box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+display: flex;
+justify-content: space-between;
+align-items: center;
+flex-wrap: wrap;
+gap: 15px;
+}
+
+.header-left {
+display: flex;
+align-items: center;
+gap: 15px;
+}
+
+.header-left img {
+width: 50px;
+height: 50px;
+}
+
+.header-title h1 {
+font-size: 1.6em;
+margin-bottom: 3px;
+}
+
+.header-title p {
+color: #4a9eff;
+font-size: 0.85em;
+}
+
+.btn-back {
+background: linear-gradient(135deg, #000000 0%, #333333 100%);
+color: white;
+border: none;
+padding: 10px 20px;
+border-radius: 8px;
+cursor: pointer;
+font-size: 0.9em;
+font-weight: 600;
+transition: all 0.3s;
+text-decoration: none;
+display: inline-block;
+}
+
+.btn-back:hover {
+transform: translateY(-2px);
+box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.content-card {
+background: white;
+border-radius: 15px;
+padding: 30px;
+box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.page-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 30px;
+padding-bottom: 20px;
+border-bottom: 2px solid #e5e7eb;
+}
+
+.page-header h2 {
+color: #000000;
+font-size: 1.8em;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.alert-readonly {
+background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+border: 2px solid #fbbf24;
+border-radius: 12px;
+padding: 15px 20px;
+margin-bottom: 25px;
+display: flex;
+align-items: center;
+gap: 12px;
+}
+
+.alert-readonly .icon {
+font-size: 1.8em;
+}
+
+.alert-readonly p {
+color: #92400e;
+font-size: 0.9em;
+margin: 0;
+}
+
+.search-bar {
+display: flex;
+gap: 15px;
+margin-bottom: 25px;
+flex-wrap: wrap;
+}
+
+.search-bar input,
+.search-bar select {
+flex: 1;
+min-width: 200px;
+padding: 12px;
+border: 2px solid #ddd;
+border-radius: 8px;
+font-size: 0.95em;
+}
+
+.search-bar input:focus,
+.search-bar select:focus {
+outline: none;
+border-color: #2a5298;
+box-shadow: 0 0 0 3px rgba(42,82,152,0.1);
+}
+
+.btn {
+padding: 12px 24px;
+border: none;
+border-radius: 8px;
+font-size: 0.95em;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+white-space: nowrap;
+}
+
+.btn-primary {
+background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+color: white;
+}
+
+.btn-primary:hover {
+transform: translateY(-2px);
+box-shadow: 0 5px 15px rgba(42,82,152,0.4);
+}
+
+.btn-secondary {
+background: linear-gradient(135deg, #000000 0%, #333333 100%);
+color: white;
+}
+
+.btn-secondary:hover {
+transform: translateY(-2px);
+box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+.table-container {
+overflow-x: auto;
+border-radius: 12px;
+box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+background: white;
+}
+
+table th {
+background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+color: white;
+padding: 15px 12px;
+text-align: left;
+font-weight: 600;
+font-size: 0.9em;
+white-space: nowrap;
+}
+
+table td {
+padding: 12px;
+border-bottom: 1px solid #eee;
+font-size: 0.9em;
+}
+
+table tr:hover {
+background: #f8f9fa;
+}
+
+.status-badge {
+display: inline-block;
+padding: 5px 12px;
+border-radius: 20px;
+font-size: 0.85em;
+font-weight: 600;
+white-space: nowrap;
+}
+
+.badge-leve {
+background: #d4edda;
+color: #155724;
+}
+
+.badge-grave {
+background: #fff3cd;
+color: #856404;
+}
+
+.badge-muy-grave {
+background: #f8d7da;
+color: #721c24;
+}
+
+.loading {
+text-align: center;
+padding: 40px;
+color: #666;
+font-size: 1.1em;
+}
+
+.no-data {
+text-align: center;
+padding: 60px 20px;
+color: #999;
+}
+
+.no-data-icon {
+font-size: 4em;
+margin-bottom: 15px;
+opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+header {
+flex-direction: column;
+text-align: center;
+}
+
+.page-header {
+flex-direction: column;
+align-items: flex-start;
+gap: 15px;
+}
+
+.search-bar {
+flex-direction: column;
+}
+
+.search-bar input,
+.search-bar select,
+.btn {
+width: 100%;
+min-width: 100%;
+}
+
+table {
+font-size: 0.85em;
+}
+
+table th,
+table td {
+padding: 8px 6px;
+}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<!-- HEADER -->
+<header>
+<div class="header-left">
+<img src="./logo.png" alt="Logo" onerror="this.style.display='none'">
+<div class="header-title">
+<h1>📋 Registro de Incidencias</h1>
+<p>Solo Lectura - CENSA</p>
+</div>
+</div>
+
+<a href="consulta.html" class="btn-back">
+← Volver al Dashboard
+</a>
+</header>
+
+<!-- CONTENIDO -->
+<div class="content-card">
+<!-- ALERTA DE SOLO LECTURA -->
+<div class="alert-readonly">
+<div class="icon">🔒</div>
+<p><strong>Vista de solo lectura.</strong> Puedes consultar y filtrar las incidencias, pero no crear, editar ni eliminar registros.</p>
+</div>
+
+<!-- BARRA DE BÚSQUEDA -->
+<div class="search-bar">
+<input type="text" id="buscarEstudiante" placeholder="🔍 Buscar por nombre de estudiante...">
+<select id="filtrarCurso">
+<option value="">Todos los cursos</option>
+<option value="1ro A">1ro A</option>
+<option value="1ro B">1ro B</option>
+<option value="2do A">2do A</option>
+<option value="2do B">2do B</option>
+<option value="3ro A">3ro A</option>
+<option value="3ro B">3ro B</option>
+<option value="4to A">4to A</option>
+<option value="4to B">4to B</option>
+<option value="5to A">5to A</option>
+<option value="5to B">5to B</option>
+<option value="6to A">6to A</option>
+<option value="6to B">6to B</option>
+</select>
+<select id="filtrarTipo">
+<option value="">Todos los tipos</option>
+<option value="Leve">Leve</option>
+<option value="Grave">Grave</option>
+<option value="Muy Grave">Muy Grave</option>
+</select>
+<button class="btn btn-primary" onclick="buscarIncidencias()">🔍 Buscar</button>
+<button class="btn btn-secondary" onclick="recargarIncidencias()">🔄 Recargar</button>
+</div>
+
+<!-- TABLA DE INCIDENCIAS -->
+<div class="table-container">
+<table id="tablaIncidencias">
+<thead>
+<tr>
+<th>Fecha</th>
+<th>Estudiante</th>
+<th>Curso</th>
+<th>Tipo</th>
+<th>Conducta</th>
+<th>Docente</th>
+<th>Descripción</th>
+<th>Seguimiento</th>
+</tr>
+</thead>
+<tbody id="bodyIncidencias">
+<tr>
+<td colspan="8" class="loading">📥 Cargando incidencias...</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<script src="./auth-guard.js"></script>
+<script>
+// Datos de incidencias
+let datosIncidencias = [];
+let incidenciasFiltradas = [];
+
+// Configuración (cargada desde localStorage)
+let CONFIG = {
+urlIncidencias: ''
+};
+
+// Cargar configuración
+window.addEventListener('load', function() {
+const configGuardada = localStorage.getItem('censaConfig');
+if (configGuardada) {
+CONFIG = JSON.parse(configGuardada);
+console.log('✅ Configuración cargada:', CONFIG);
+}
+
+cargarIncidencias();
+});
+
+// Cargar datos desde Google Sheets
+async function cargarDatosDesdeGoogleSheets(url) {
+try {
+const response = await fetch(url);
+if (!response.ok) throw new Error('Error en la respuesta');
+const data = await response.json();
+return data;
+} catch (error) {
+console.error('Error cargando datos:', error);
+return [];
+}
+}
+
+// Cargar incidencias
+async function cargarIncidencias() {
+const tbody = document.getElementById('bodyIncidencias');
+
+if (CONFIG.urlIncidencias) {
+try {
+const datos = await cargarDatosDesdeGoogleSheets(CONFIG.urlIncidencias);
+if (datos && datos.length > 0) {
+datosIncidencias = datos;
+incidenciasFiltradas = datos;
+mostrarIncidencias();
+} else {
+mostrarSinDatos();
+}
+} catch (error) {
+console.error('Error:', error);
+tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#dc3545;">⚠️ Error al cargar datos. Verifica la configuración.</td></tr>';
+}
+} else {
+tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#dc3545;">⚠️ No hay URL de Google Sheets configurada. Contacta al administrador.</td></tr>';
+}
+}
+
+// Mostrar incidencias en la tabla
+function mostrarIncidencias() {
+const tbody = document.getElementById('bodyIncidencias');
+
+if (incidenciasFiltradas.length === 0) {
+mostrarSinDatos();
+return;
+}
+
+tbody.innerHTML = incidenciasFiltradas.map(inc => `
+<tr>
+<td>${formatearFecha(inc.fecha)}</td>
+<td><strong>${inc.estudiante || 'N/A'}</strong></td>
+<td>${inc.curso || 'N/A'}</td>
+<td><span class="status-badge badge-${inc.tipo.toLowerCase().replace(/ /g, '-')}">${inc.tipo || 'N/A'}</span></td>
+<td>${inc.tipoConducta || 'N/A'}</td>
+<td>${inc.docente || 'N/A'}</td>
+<td style="max-width:250px;">${inc.descripcion || 'N/A'}</td>
+<td style="max-width:200px;">${inc.seguimiento || '-'}</td>
+</tr>
+`).join('');
+
+console.log(`📊 Mostrando ${incidenciasFiltradas.length} incidencias`);
+}
+
+// Mostrar mensaje cuando no hay datos
+function mostrarSinDatos() {
+const tbody = document.getElementById('bodyIncidencias');
+tbody.innerHTML = `
+<tr>
+<td colspan="8">
+<div class="no-data">
+<div class="no-data-icon">📭</div>
+<p style="font-size:1.2em;font-weight:600;margin-bottom:5px;">No hay incidencias registradas</p>
+<p style="font-size:0.9em;">O no se encontraron resultados con los filtros aplicados.</p>
+</div>
+</td>
+</tr>
+`;
+}
+
+// Buscar incidencias con filtros
+function buscarIncidencias() {
+const buscarEstudiante = document.getElementById('buscarEstudiante').value.toLowerCase();
+const filtrarCurso = document.getElementById('filtrarCurso').value;
+const filtrarTipo = document.getElementById('filtrarTipo').value;
+
+incidenciasFiltradas = datosIncidencias.filter(inc => {
+const cumpleEstudiante = !buscarEstudiante || (inc.estudiante && inc.estudiante.toLowerCase().includes(buscarEstudiante));
+const cumpleCurso = !filtrarCurso || inc.curso === filtrarCurso;
+const cumpleTipo = !filtrarTipo || inc.tipo === filtrarTipo;
+
+return cumpleEstudiante && cumpleCurso && cumpleTipo;
+});
+
+mostrarIncidencias();
+console.log(`🔍 Filtrado: ${incidenciasFiltradas.length} de ${datosIncidencias.length} incidencias`);
+}
+
+// Recargar incidencias
+function recargarIncidencias() {
+document.getElementById('buscarEstudiante').value = '';
+document.getElementById('filtrarCurso').value = '';
+document.getElementById('filtrarTipo').value = '';
+
+incidenciasFiltradas = datosIncidencias;
+mostrarIncidencias();
+console.log('🔄 Filtros limpiados');
+}
+
+// Formatear fecha
+function formatearFecha(fechaStr) {
+if (!fechaStr) return 'N/A';
+
+try {
+const fecha = new Date(fechaStr);
+const dia = String(fecha.getDate()).padStart(2, '0');
+const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+const año = fecha.getFullYear();
+const hora = String(fecha.getHours()).padStart(2, '0');
+const minutos = String(fecha.getMinutes()).padStart(2, '0');
+
+return `${dia}/${mes}/${año} ${hora}:${minutos}`;
+} catch (error) {
+return fechaStr;
+}
+}
+
+console.log('📋 Módulo de incidencias (consulta) cargado');
+</script>
+
+</body>
+</html>
