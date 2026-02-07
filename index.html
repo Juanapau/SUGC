@@ -24,22 +24,22 @@ padding: 20px;
 
 .login-container {
 background: white;
-border-radius: 20px;
-box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+border-radius: 15px;
+box-shadow: 0 12px 48px rgba(0,0,0,0.4);
 max-width: 450px;
 width: 100%;
 overflow: hidden;
-animation: slideDown 0.5s ease-out;
+animation: slideIn 0.3s ease;
 }
 
-@keyframes slideDown {
+@keyframes slideIn {
 from {
-opacity: 0;
 transform: translateY(-50px);
+opacity: 0;
 }
 to {
-opacity: 1;
 transform: translateY(0);
+opacity: 1;
 }
 }
 
@@ -55,7 +55,7 @@ width: 80px;
 height: 80px;
 margin-bottom: 15px;
 border-radius: 50%;
-border: 3px solid #dc2626;
+border: 3px solid #2a5298;
 }
 
 .login-header h1 {
@@ -73,8 +73,8 @@ padding: 40px 30px;
 }
 
 .alert {
-padding: 12px 15px;
-border-radius: 10px;
+padding: 15px 20px;
+border-radius: 8px;
 margin-bottom: 20px;
 display: none;
 animation: shake 0.3s;
@@ -87,15 +87,15 @@ animation: shake 0.3s;
 }
 
 .alert-error {
-background: #fee2e2;
-color: #991b1b;
+background: #f8d7da;
+color: #721c24;
 border-left: 4px solid #dc2626;
 }
 
 .alert-success {
-background: #d1fae5;
-color: #065f46;
-border-left: 4px solid #10b981;
+background: #d4edda;
+color: #155724;
+border-left: 4px solid #28a745;
 }
 
 .form-group {
@@ -105,16 +105,16 @@ margin-bottom: 25px;
 .form-group label {
 display: block;
 margin-bottom: 8px;
-color: #374151;
+color: #000000;
 font-weight: 600;
 font-size: 0.95em;
 }
 
 .form-group input {
 width: 100%;
-padding: 14px 18px;
-border: 2px solid #e5e7eb;
-border-radius: 10px;
+padding: 12px;
+border: 2px solid #ddd;
+border-radius: 8px;
 font-size: 1em;
 transition: all 0.3s;
 font-family: inherit;
@@ -123,7 +123,7 @@ font-family: inherit;
 .form-group input:focus {
 outline: none;
 border-color: #2a5298;
-box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+box-shadow: 0 0 0 3px rgba(42,82,152,0.1);
 }
 
 .password-container {
@@ -136,9 +136,10 @@ right: 15px;
 top: 50%;
 transform: translateY(-50%);
 cursor: pointer;
-color: #6b7280;
+color: #666;
 font-size: 1.2em;
 user-select: none;
+transition: color 0.3s;
 }
 
 .toggle-password:hover {
@@ -147,21 +148,21 @@ color: #2a5298;
 
 .btn-login {
 width: 100%;
-padding: 15px;
-background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+padding: 12px 30px;
+background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
 color: white;
 border: none;
-border-radius: 10px;
-font-size: 1.1em;
+border-radius: 8px;
+font-size: 1em;
 font-weight: 600;
 cursor: pointer;
 transition: all 0.3s;
-box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3);
+margin-top: 10px;
 }
 
 .btn-login:hover {
 transform: translateY(-2px);
-box-shadow: 0 6px 12px rgba(220, 38, 38, 0.4);
+box-shadow: 0 5px 15px rgba(42,82,152,0.4);
 }
 
 .btn-login:active {
@@ -178,13 +179,18 @@ box-shadow: none;
 .login-footer {
 text-align: center;
 padding: 20px;
-background: #f9fafb;
-border-top: 1px solid #e5e7eb;
+background: #f8f9fa;
+border-top: 1px solid #eee;
 }
 
 .login-footer p {
-color: #6b7280;
+color: #666;
 font-size: 0.85em;
+}
+
+.login-footer p:first-child {
+color: #000000;
+font-weight: 600;
 }
 
 .loading {
@@ -367,15 +373,11 @@ alertSuccess.style.display = 'block';
 btnLogin.innerHTML = '✅ Acceso concedido';
 
 console.log('✅ Login exitoso:', datosUsuario);
-console.log('👤 Rol:', datosUsuario.rol);
-console.log('💼 Cargo:', datosUsuario.cargo);
 
 setTimeout(() => {
 if (datosUsuario.rol === 'administrador') {
-console.log('🔀 Redirigiendo a admin.html');
 window.location.href = 'admin.html';
 } else if (datosUsuario.rol === 'consulta') {
-console.log('🔀 Redirigiendo a consulta.html');
 window.location.href = 'consulta.html';
 }
 }, 1000);
@@ -406,13 +408,8 @@ toggleIcon.textContent = '👁️';
 }
 }
 
-// ==========================================
-// VERIFICAR SI YA HAY SESIÓN ACTIVA
-// ==========================================
-
 window.addEventListener('load', function() {
 const sesionActiva = localStorage.getItem('usuarioUGC');
-
 if (sesionActiva) {
 const usuario = JSON.parse(sesionActiva);
 console.log('⚠️ Ya hay una sesión activa:', usuario);
@@ -426,8 +423,6 @@ document.getElementById('loginForm').dispatchEvent(new Event('submit'));
 });
 
 console.log('🔐 Sistema de login cargado');
-console.log('👥 Usuarios configurados:', Object.keys(USUARIOS).length);
-console.log('📝 Usuarios disponibles:', Object.keys(USUARIOS));
 </script>
 
 </body>
