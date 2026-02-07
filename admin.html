@@ -2262,7 +2262,7 @@ header img {
         </div>
     </div>
     
-    <button class="btn-logout-admin" onclick="cerrarSesionUGC()">
+    <button class="btn-logout-admin" onclick="mostrarConfirmacionSalirAdmin()">
         🚪 Salir
     </button>
     
@@ -2697,6 +2697,148 @@ window.addEventListener('load', function() {
         console.log('✅ Usuario cargado:', usuario);
     }
 });
+</script>
+
+<!-- MODAL DE CONFIRMACIÓN SALIR -->
+<div class="modal-confirm-admin" id="modalConfirmAdmin">
+    <div class="modal-confirm-content-admin">
+        <div class="modal-confirm-header-admin">
+            <h3>⚠️ Confirmar Cierre de Sesión</h3>
+        </div>
+        <div class="modal-confirm-body-admin">
+            <p>¿Estás seguro de que deseas cerrar sesión?</p>
+            <div class="modal-confirm-buttons-admin">
+                <button class="btn-confirm-admin btn-confirm-yes-admin" onclick="cerrarSesionConfirmado()">
+                    Sí, Cerrar Sesión
+                </button>
+                <button class="btn-confirm-admin btn-confirm-no-admin" onclick="cerrarModalAdmin()">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Modal de confirmación para admin */
+.modal-confirm-admin {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-confirm-content-admin {
+    background: white;
+    border-radius: 15px;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.4);
+    animation: slideIn 0.3s ease;
+    overflow: hidden;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-confirm-header-admin {
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+    color: white;
+    padding: 20px 25px;
+    text-align: center;
+}
+
+.modal-confirm-header-admin h3 {
+    font-size: 1.3em;
+    margin: 0;
+}
+
+.modal-confirm-body-admin {
+    padding: 30px 25px;
+    text-align: center;
+}
+
+.modal-confirm-body-admin p {
+    color: #666;
+    font-size: 1.05em;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.modal-confirm-buttons-admin {
+    display: flex;
+    gap: 15px;
+}
+
+.btn-confirm-admin {
+    flex: 1;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-confirm-yes-admin {
+    background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+    color: white;
+}
+
+.btn-confirm-yes-admin:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(42,82,152,0.4);
+}
+
+.btn-confirm-no-admin {
+    background: linear-gradient(135deg, #000000 0%, #333333 100%);
+    color: white;
+}
+
+.btn-confirm-no-admin:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+</style>
+
+<script>
+// Funciones para modal de confirmación de salir
+function mostrarConfirmacionSalirAdmin() {
+    document.getElementById('modalConfirmAdmin').style.display = 'flex';
+}
+
+function cerrarModalAdmin() {
+    document.getElementById('modalConfirmAdmin').style.display = 'none';
+}
+
+function cerrarSesionConfirmado() {
+    localStorage.removeItem('usuarioUGC');
+    console.log('👋 Sesión cerrada');
+    window.location.href = 'index.html';
+}
+
+// Cerrar modal al hacer clic fuera
+window.onclick = function(event) {
+    const modal = document.getElementById('modalConfirmAdmin');
+    if (event.target == modal) {
+        cerrarModalAdmin();
+    }
+}
 </script>
     
 </body>
