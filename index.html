@@ -306,7 +306,6 @@ Iniciar Sesión
 </button>
 </form>
 
-<!-- CREDENCIALES DE PRUEBA (SOLO PARA DEMO) -->
 <div class="demo-credentials">
 <h3>🔓 Credenciales de Prueba</h3>
 <div class="demo-item">
@@ -358,23 +357,18 @@ const btnLogin = document.getElementById('btnLogin');
 const alertError = document.getElementById('alertError');
 const alertSuccess = document.getElementById('alertSuccess');
 
-// Ocultar alertas
 alertError.style.display = 'none';
 alertSuccess.style.display = 'none';
 
-// Validar campos vacíos
 if (!usuario || !password) {
 mostrarError('Por favor complete todos los campos');
 return;
 }
 
-// Deshabilitar botón
 btnLogin.disabled = true;
 btnLogin.innerHTML = '<span class="loading"></span> Verificando...';
 
-// Simular verificación (en producción sería una llamada a API)
 setTimeout(() => {
-// Verificar usuario
 if (!USUARIOS[usuario]) {
 mostrarError('Usuario no encontrado');
 btnLogin.disabled = false;
@@ -382,7 +376,6 @@ btnLogin.innerHTML = 'Iniciar Sesión';
 return;
 }
 
-// Verificar contraseña
 if (USUARIOS[usuario].password !== password) {
 mostrarError('Contraseña incorrecta');
 btnLogin.disabled = false;
@@ -390,7 +383,6 @@ btnLogin.innerHTML = 'Iniciar Sesión';
 return;
 }
 
-// Login exitoso
 const datosUsuario = {
 usuario: usuario,
 rol: USUARIOS[usuario].rol,
@@ -398,20 +390,21 @@ nombre: USUARIOS[usuario].nombre,
 loginTime: new Date().toISOString()
 };
 
-// Guardar en localStorage
 localStorage.setItem('usuarioUGC', JSON.stringify(datosUsuario));
 
-// Mostrar éxito
 alertSuccess.style.display = 'block';
 btnLogin.innerHTML = '✅ Acceso concedido';
 
 console.log('✅ Login exitoso:', datosUsuario);
+console.log('👤 Rol:', datosUsuario.rol);
 
-// Redirigir según el rol
+// ✅ CORREGIDO: Redirigir según el rol
 setTimeout(() => {
 if (datosUsuario.rol === 'administrador') {
-window.location.href = 'index.html';
+console.log('🔀 Redirigiendo a admin.html');
+window.location.href = 'admin.html';
 } else if (datosUsuario.rol === 'consulta') {
+console.log('🔀 Redirigiendo a consulta.html');
 window.location.href = 'consulta.html';
 }
 }, 1000);
@@ -452,19 +445,8 @@ const sesionActiva = localStorage.getItem('usuarioUGC');
 if (sesionActiva) {
 const usuario = JSON.parse(sesionActiva);
 console.log('⚠️ Ya hay una sesión activa:', usuario);
-
-// Opcional: Redirigir automáticamente
-// if (usuario.rol === 'administrador') {
-//     window.location.href = 'index.html';
-// } else {
-//     window.location.href = 'consulta.html';
-// }
 }
 });
-
-// ==========================================
-// PERMITIR ENTER PARA SUBMIT
-// ==========================================
 
 document.getElementById('password').addEventListener('keypress', function(e) {
 if (e.key === 'Enter') {
