@@ -419,26 +419,26 @@ grid-template-columns: 1fr;
 <button class="btn-view">👁️ Ver Reportes</button>
 </div>
 
-<!-- HISTORIAL -->
-<div class="module-card" onclick="verModulo('historial')">
+<!-- REUNIONES Y ACUERDOS -->
+<div class="module-card" onclick="verModulo('reuniones')">
 <div class="module-header">
-<div class="module-icon">📜</div>
+<div class="module-icon">🤝</div>
 <div class="module-info">
-<h3>Historial</h3>
-<p>Actividad del sistema</p>
+<h3>Reuniones y Acuerdos</h3>
+<p>Con padres de familia</p>
 </div>
 </div>
 <div class="module-stats">
 <div class="stat-item">
-<span class="number">🕐</span>
-<span class="label">Reciente</span>
+<span class="number" id="statReuniones">---</span>
+<span class="label">Total</span>
 </div>
 <div class="stat-item">
-<span class="number">📅</span>
-<span class="label">Archivo</span>
+<span class="number" id="statReunionesMes">---</span>
+<span class="label">Este Mes</span>
 </div>
 </div>
-<button class="btn-view">👁️ Ver Historial</button>
+<button class="btn-view">👁️ Ver Reuniones</button>
 </div>
 </div>
 </div>
@@ -504,7 +504,8 @@ cargarEstadisticas();
 // URLs de Google Sheets
 const CONFIG_STATS = {
 urlIncidencias: 'https://script.google.com/macros/s/AKfycbwnCHIHNum-8uCHLbuE5NvwJeVmVMF6hCLWOAQQRUOwsU5GK_vpkrxifDFlMat1tP-z/exec',
-urlTardanzas: 'https://script.google.com/macros/s/AKfycbxI2JCRc-f0MdokDyepK_UOPf_gAbjYpCWzqe6ShqhRIP7uurohjBdswChKHaExsT2Riw/exec'
+urlTardanzas: 'https://script.google.com/macros/s/AKfycbxI2JCRc-f0MdokDyepK_UOPf_gAbjYpCWzqe6ShqhRIP7uurohjBdswChKHaExsT2Riw/exec',
+urlReuniones: 'https://script.google.com/macros/s/AKfycbxjky9LnAAqElohVjgLESUA2nh-ICXYWNDMGkVfGjwVEb1tc0HQAtg-sayrFMXH788aLA/exec'
 };
 
 async function cargarDatosDesdeGoogleSheets(url) {
@@ -529,6 +530,8 @@ document.getElementById('statIncidencias').textContent = '...';
 document.getElementById('statIncidenciasMes').textContent = '...';
 document.getElementById('statTardanzas').textContent = '...';
 document.getElementById('statTardanzasHoy').textContent = '...';
+document.getElementById('statReuniones').textContent = '...';
+document.getElementById('statReunionesMes').textContent = '...';
 
 console.log('📊 Valores iniciales establecidos en "..."');
 
@@ -592,6 +595,31 @@ document.getElementById('statTardanzas').textContent = totalTardanzas;
 document.getElementById('statTardanzasHoy').textContent = tardanzasHoy;
 
 console.log(`✅ Tardanzas actualizadas: ${totalTardanzas} (Hoy: ${tardanzasHoy})`);
+
+// Cargar reuniones
+console.log('📥 Cargando reuniones desde Google Sheets...');
+const reuniones = await cargarDatosDesdeGoogleSheets(CONFIG_STATS.urlReuniones);
+console.log('📥 Reuniones recibidas:', reuniones.length, 'registros');
+
+const totalReuniones = reuniones.length;
+
+const reunionesMes = reuniones.filter(reun => {
+try {
+const fecha = new Date(reun.fecha || reun.Fecha);
+return fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
+} catch {
+return false;
+}
+}).length;
+
+console.log('📊 Total reuniones:', totalReuniones);
+console.log('📊 Reuniones del mes:', reunionesMes);
+
+// Actualizar reuniones
+document.getElementById('statReuniones').textContent = totalReuniones;
+document.getElementById('statReunionesMes').textContent = reunionesMes;
+
+console.log(`✅ Reuniones actualizadas: ${totalReuniones} (Mes: ${reunionesMes})`);
 console.log('📊 ===== ESTADÍSTICAS REALES CARGADAS =====');
 
 } catch (error) {
@@ -605,6 +633,8 @@ document.getElementById('statIncidencias').textContent = '0';
 document.getElementById('statIncidenciasMes').textContent = '0';
 document.getElementById('statTardanzas').textContent = '0';
 document.getElementById('statTardanzasHoy').textContent = '0';
+document.getElementById('statReuniones').textContent = '0';
+document.getElementById('statReunionesMes').textContent = '0';
 }
 }
 
@@ -619,7 +649,7 @@ const paginas = {
 'incidencias': 'incidencias-consulta.html',
 'tardanzas': 'tardanzas-consulta.html',
 'estadisticas': 'estadisticas-consulta.html',
-'historial': 'historial-consulta.html'
+'reuniones': 'reuniones-consulta.html'
 };
 
 if (paginas[modulo]) {
