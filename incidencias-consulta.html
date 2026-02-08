@@ -147,6 +147,14 @@ border-color: #2a5298;
 box-shadow: 0 0 0 3px rgba(42,82,152,0.1);
 }
 
+/* Forzar que los filtros estén habilitados */
+.filter-select {
+pointer-events: auto !important;
+opacity: 1 !important;
+cursor: pointer !important;
+background: white !important;
+}
+
 .btn {
 padding: 12px 24px;
 border: none;
@@ -295,7 +303,7 @@ padding: 8px 6px;
 <div class="header-left">
 <img src="./logo.png" alt="Logo" onerror="this.style.display='none'">
 <div class="header-title">
-<h1>📋 Registro de Incidencias</h1>
+<h1>Registro de Incidencias</h1>
 <p>Solo Lectura - CENSA</p>
 </div>
 </div>
@@ -307,16 +315,20 @@ padding: 8px 6px;
 
 <!-- CONTENIDO -->
 <div class="content-card">
-<!-- ALERTA DE SOLO LECTURA -->
-<div class="alert-readonly">
-<div class="icon">🔒</div>
-<p><strong>Vista de solo lectura.</strong> Puedes consultar y filtrar las incidencias, pero no crear, editar ni eliminar registros.</p>
-</div>
 
 <!-- BARRA DE BÚSQUEDA -->
 <div class="search-bar">
-<input type="text" id="buscarEstudiante" placeholder="🔍 Buscar por nombre de estudiante...">
-<select id="filtrarCurso">
+<div style="position: relative; flex: 1; min-width: 200px;">
+<input type="text" 
+id="buscarEstudiante" 
+placeholder="🔍 Buscar por nombre de estudiante..."
+autocomplete="off"
+oninput="filtrarSugerencias()"
+onfocus="mostrarSugerencias()"
+style="width: 100%;">
+<div id="sugerenciasEstudiantes" style="display:none; position:absolute; z-index:1000; background:white; border:1px solid #ccc; max-height:200px; overflow-y:auto; width:100%; box-shadow:0 2px 8px rgba(0,0,0,0.1); border-radius: 0 0 8px 8px; margin-top: -2px;"></div>
+</div>
+<select id="filtrarCurso" class="filter-select">
 <option value="">Todos los cursos</option>
 <option value="1ro A">1ro A</option>
 <option value="1ro B">1ro B</option>
@@ -331,7 +343,7 @@ padding: 8px 6px;
 <option value="6to A">6to A</option>
 <option value="6to B">6to B</option>
 </select>
-<select id="filtrarTipo">
+<select id="filtrarTipo" class="filter-select">
 <option value="">Todos los tipos</option>
 <option value="Leve">Leve</option>
 <option value="Grave">Grave</option>
@@ -554,6 +566,66 @@ return `${dia}/${mes}/${año} ${hora}:${minutos}`;
 return fechaStr;
 }
 }
+
+// ==========================================
+// AUTOCOMPLETADO DINÁMICO
+// ==========================================
+
+function filtrarSugerencias() {
+const input = document.getElementById('buscarEstudiante');
+const sugerencias = document.getElementById('sugerenciasEstudiantes');
+const texto = input.value.toLowerCase().trim();
+
+if (texto.length === 0) {
+sugerencias.style.display = 'none';
+return;
+}
+
+// Obtener estudiantes únicos de las incidencias
+const estudiantesUnicos = [...new Set(datosIncidencias
+.map(inc => inc['Nombre Estudiante'])
+.filter(nombre => nombre && nombre.toLowerCase().includes(texto))
+)].sort();
+
+if (estudiantesUnicos.length === 0) {
+sugerencias.style.display = 'none';
+return;
+}
+
+// Mostrar sugerencias
+sugerencias.innerHTML = estudiantesUnicos.map(nombre => `
+<div onclick="seleccionarEstudiante('${nombre.replace(/'/g, "\\'")}')" 
+style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; transition: background 0.2s;"
+onmouseover="this.style.background='#f0f0f0'"
+onmouseout="this.style.background='white'">
+${nombre}
+</div>
+`).join('');
+
+sugerencias.style.display = 'block';
+}
+
+function mostrarSugerencias() {
+const input = document.getElementById('buscarEstudiante');
+if (input.value.trim().length > 0) {
+filtrarSugerencias();
+}
+}
+
+function seleccionarEstudiante(nombre) {
+document.getElementById('buscarEstudiante').value = nombre;
+document.getElementById('sugerenciasEstudiantes').style.display = 'none';
+buscarIncidencias();
+}
+
+// Cerrar sugerencias al hacer clic fuera
+document.addEventListener('click', function(e) {
+const sugerencias = document.getElementById('sugerenciasEstudiantes');
+const input = document.getElementById('buscarEstudiante');
+if (e.target !== input && e.target !== sugerencias) {
+sugerencias.style.display = 'none';
+}
+});
 
 console.log('📋 Módulo de incidencias (consulta) cargado');
 </script>
