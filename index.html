@@ -296,17 +296,40 @@ if (!response.ok) throw new Error('Error al cargar usuarios');
 
 const data = await response.json();
 console.log('✅ Usuarios cargados:', data.length);
+console.log('🔍 DATOS RECIBIDOS:', data);
 
 // Convertir array a objeto para fácil búsqueda
 const usuariosObj = {};
 data.forEach(user => {
-usuariosObj[user.Usuario] = {
-password: user.Contraseña,
-rol: user.Tipo,
-nombre: user['Nombre Completo'],
-cargo: user.Cargo
-};
+console.log('🔍 Usuario raw:', user);
+
+// Buscar el campo de usuario en diferentes posibles nombres
+const username = user.Usuario || user.usuario || user.USUARIO;
+const password = user.Contraseña || user['Contraseña'] || user.contraseña || user.password || user.Password;
+const nombreCompleto = user['Nombre Completo'] || user.Nombre || user.nombre || user.NombreCompleto;
+const cargo = user.Cargo || user.cargo || user.CARGO;
+const tipo = user.Tipo || user.tipo || user.TIPO || user.Rol || user.rol;
+
+console.log('🔍 Campos extraídos:', {
+username,
+password,
+nombreCompleto,
+cargo,
+tipo
 });
+
+if (username) {
+usuariosObj[username.toLowerCase()] = {
+password: password,
+rol: tipo,
+nombre: nombreCompleto,
+cargo: cargo
+};
+}
+});
+
+console.log('🔍 USUARIOS FINALES:', usuariosObj);
+console.log('🔍 USUARIOS DISPONIBLES:', Object.keys(usuariosObj));
 
 USUARIOS_CACHE = usuariosObj;
 return usuariosObj;
