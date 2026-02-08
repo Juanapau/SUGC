@@ -469,18 +469,23 @@ mostrarSinDatos();
 return;
 }
 
-tbody.innerHTML = incidenciasFiltradas.map(inc => `
+tbody.innerHTML = incidenciasFiltradas.map(inc => {
+const tipo = inc.tipo || 'N/A';
+const tipoClass = tipo !== 'N/A' ? tipo.toLowerCase().replace(/ /g, '-') : 'leve';
+
+return `
 <tr>
 <td>${formatearFecha(inc.fecha)}</td>
 <td><strong>${inc.estudiante || 'N/A'}</strong></td>
 <td>${inc.curso || 'N/A'}</td>
-<td><span class="status-badge badge-${inc.tipo.toLowerCase().replace(/ /g, '-')}">${inc.tipo || 'N/A'}</span></td>
+<td><span class="status-badge badge-${tipoClass}">${tipo}</span></td>
 <td>${inc.tipoConducta || 'N/A'}</td>
 <td>${inc.docente || 'N/A'}</td>
 <td style="max-width:250px;">${inc.descripcion || 'N/A'}</td>
 <td style="max-width:200px;">${inc.seguimiento || '-'}</td>
 </tr>
-`).join('');
+`;
+}).join('');
 
 console.log(`📊 Mostrando ${incidenciasFiltradas.length} incidencias`);
 }
