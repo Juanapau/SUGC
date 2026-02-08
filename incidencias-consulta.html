@@ -395,13 +395,23 @@ cargarIncidencias();
 
 // Cargar datos desde Google Sheets
 async function cargarDatosDesdeGoogleSheets(url) {
+console.log('🔗 Intentando cargar desde:', url);
+
 try {
 const response = await fetch(url);
-if (!response.ok) throw new Error('Error en la respuesta');
+console.log('📡 Respuesta recibida:', response.status, response.statusText);
+
+if (!response.ok) {
+throw new Error(`HTTP error! status: ${response.status}`);
+}
+
 const data = await response.json();
+console.log('✅ Datos recibidos:', data.length, 'registros');
 return data;
 } catch (error) {
-console.error('Error cargando datos:', error);
+console.error('❌ Error detallado:', error);
+console.error('❌ Tipo de error:', error.name);
+console.error('❌ Mensaje:', error.message);
 return [];
 }
 }
@@ -409,23 +419,44 @@ return [];
 // Cargar incidencias
 async function cargarIncidencias() {
 const tbody = document.getElementById('bodyIncidencias');
+console.log('📋 Iniciando carga de incidencias...');
+console.log('🔗 URL configurada:', CONFIG.urlIncidencias);
 
-if (CONFIG.urlIncidencias) {
+if (!CONFIG.urlIncidencias || CONFIG.urlIncidencias === '') {
+console.error('❌ No hay URL configurada');
+tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#dc3545;">⚠️ No hay URL de Google Sheets configurada. Contacta al administrador.</td></tr>';
+return;
+}
+
+tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#666;">📥 Cargando incidencias desde Google Sheets...</td></tr>';
+
 try {
 const datos = await cargarDatosDesdeGoogleSheets(CONFIG.urlIncidencias);
+console.log('📊 Datos recibidos:', datos);
+
 if (datos && datos.length > 0) {
 datosIncidencias = datos;
 incidenciasFiltradas = datos;
+console.log('✅ Incidencias cargadas:', datos.length);
 mostrarIncidencias();
 } else {
+console.log('⚠️ No hay datos o la respuesta está vacía');
 mostrarSinDatos();
 }
 } catch (error) {
-console.error('Error:', error);
-tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#dc3545;">⚠️ Error al cargar datos. Verifica la configuración.</td></tr>';
-}
-} else {
-tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#dc3545;">⚠️ No hay URL de Google Sheets configurada. Contacta al administrador.</td></tr>';
+console.error('❌ Error fatal:', error);
+tbody.innerHTML = `
+<tr>
+<td colspan="8" style="text-align:center;padding:40px;color:#dc3545;">
+<div style="font-size:2em;margin-bottom:10px;">⚠️</div>
+<p style="font-weight:600;margin-bottom:10px;">Error al cargar datos</p>
+<p style="font-size:0.9em;margin-bottom:15px;">${error.message}</p>
+<p style="font-size:0.85em;color:#666;">
+Abre la consola del navegador (F12) para ver detalles técnicos.
+</p>
+</td>
+</tr>
+`;
 }
 }
 
