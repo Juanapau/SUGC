@@ -158,6 +158,23 @@ font-size: 0.9em;
 table td { padding: 12px; border-bottom: 1px solid #eee; font-size: 0.9em; }
 table tr:hover { background: #f8f9fa; }
 
+/* Filas resaltadas según tardanzas */
+tr.fila-advertencia {
+background: #fff3cd !important;
+}
+
+tr.fila-advertencia:hover {
+background: #ffe69c !important;
+}
+
+tr.fila-peligro {
+background: #f8d7da !important;
+}
+
+tr.fila-peligro:hover {
+background: #f1aeb5 !important;
+}
+
 .badge-warning {
 background: #fff3cd;
 color: #856404;
@@ -232,16 +249,22 @@ style="width: 100%;">
 <option value="">Todos los cursos</option>
 <option value="1roA">1roA</option>
 <option value="1roB">1roB</option>
+<option value="1roC">1roC</option>
 <option value="2doA">2doA</option>
 <option value="2doB">2doB</option>
+<option value="2doC">2doC</option>
 <option value="3roA">3roA</option>
 <option value="3roB">3roB</option>
+<option value="3roC">3roC</option>
 <option value="4toA">4toA</option>
 <option value="4toB">4toB</option>
+<option value="4toC">4toC</option>
 <option value="5toA">5toA</option>
 <option value="5toB">5toB</option>
+<option value="5toC">5toC</option>
 <option value="6toA">6toA</option>
 <option value="6toB">6toB</option>
+<option value="6toC">6toC</option>
 </select>
 <select id="filtrarMes" class="filter-select">
 <option value="">Todos los meses</option>
@@ -362,7 +385,10 @@ tbody.innerHTML = tardanzasFiltradas.map(t => {
 const totalMes = parseInt(t['Total Mes']) || 0;
 const badge = totalMes >= 4 ? 'badge-danger' : totalMes === 3 ? 'badge-warning' : '';
 
-return `<tr>
+// Clase para resaltar toda la fila
+const claseFila = totalMes >= 4 ? 'fila-peligro' : totalMes === 3 ? 'fila-advertencia' : '';
+
+return `<tr class="${claseFila}">
 <td>${formatearFecha(t['Fecha'])}</td>
 <td><strong>${t['Nombre Estudiante'] || 'N/A'}</strong></td>
 <td>${t['Curso'] || 'N/A'}</td>
