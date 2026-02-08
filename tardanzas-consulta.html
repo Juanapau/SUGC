@@ -383,10 +383,27 @@ const filtrarCurso = document.getElementById('filtrarCurso').value;
 const filtrarMes = document.getElementById('filtrarMes').value;
 const filtro = filtroRadio || document.querySelector('input[name="filtroTardanzas"]:checked').value;
 
+console.log('🔍 Filtros aplicados:');
+console.log('  - Estudiante:', buscarEstudiante || 'Todos');
+console.log('  - Curso:', filtrarCurso || 'Todos');
+console.log('  - Mes:', filtrarMes || 'Todos');
+console.log('  - Radio:', filtro);
+
+// Mostrar algunos ejemplos de meses en los datos
+if (filtrarMes) {
+const ejemplosMeses = [...new Set(datosTardanzas.map(t => t['Mes']))].slice(0, 5);
+console.log('🔍 Ejemplos de meses en datos:', ejemplosMeses);
+console.log('🔍 Mes buscado:', filtrarMes);
+}
+
 tardanzasFiltradas = datosTardanzas.filter(t => {
 const cumpleEstudiante = !buscarEstudiante || (t['Nombre Estudiante'] && t['Nombre Estudiante'].toLowerCase().includes(buscarEstudiante));
 const cumpleCurso = !filtrarCurso || t['Curso'] === filtrarCurso;
-const cumpleMes = !filtrarMes || t['Mes'] === filtrarMes;
+
+// Comparación case-insensitive para el mes
+const mesTardanza = (t['Mes'] || '').toLowerCase();
+const mesFiltro = filtrarMes.toLowerCase();
+const cumpleMes = !filtrarMes || mesTardanza === mesFiltro;
 
 const totalMes = parseInt(t['Total Mes']) || 0;
 let cumpleFiltro = true;
@@ -396,6 +413,7 @@ else if (filtro === 'mas3') cumpleFiltro = totalMes > 3;
 return cumpleEstudiante && cumpleCurso && cumpleMes && cumpleFiltro;
 });
 
+console.log(`📊 Resultados: ${tardanzasFiltradas.length} de ${datosTardanzas.length} tardanzas`);
 mostrarTardanzas();
 }
 
