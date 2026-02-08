@@ -114,6 +114,81 @@ color: #666;
 font-weight: 600;
 }
 
+/* Tarjetas con detalles */
+.stat-card-detailed {
+padding-bottom: 20px;
+}
+
+.stat-details {
+margin-top: 15px;
+padding-top: 15px;
+border-top: 1px solid #e0e0e0;
+}
+
+.stat-detail-item {
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 8px;
+margin-bottom: 12px;
+font-size: 0.9em;
+}
+
+.detail-label {
+color: #666;
+font-weight: 500;
+}
+
+.detail-value {
+color: #2a5298;
+font-weight: 700;
+font-size: 1.1em;
+}
+
+.stat-breakdown {
+display: flex;
+flex-direction: row;
+justify-content: center;
+gap: 15px;
+margin-top: 10px;
+flex-wrap: wrap;
+}
+
+.breakdown-item {
+display: flex;
+align-items: center;
+gap: 5px;
+font-size: 0.85em;
+}
+
+.breakdown-dot {
+width: 10px;
+height: 10px;
+border-radius: 50%;
+display: inline-block;
+}
+
+.breakdown-dot.leve {
+background: #28a745;
+}
+
+.breakdown-dot.grave {
+background: #ffc107;
+}
+
+.breakdown-dot.muy-grave {
+background: #dc3545;
+}
+
+.breakdown-text {
+color: #555;
+}
+
+.breakdown-text strong {
+color: #333;
+font-weight: 700;
+}
+
 .info-message {
 text-align: center;
 padding: 60px 20px;
@@ -152,7 +227,7 @@ header { flex-direction: column; text-align: center; }
 <div class="header-left">
 <img src="./logo.png" alt="Logo" onerror="this.style.display='none'">
 <div class="header-title">
-<h1>📊 Estadísticas y Reportes</h1>
+<h1>Estadísticas y Reportes</h1>
 <p>Solo Lectura - CENSA</p>
 </div>
 </div>
@@ -160,54 +235,63 @@ header { flex-direction: column; text-align: center; }
 </header>
 
 <div class="content-card">
-<div class="alert-readonly">
-<div class="icon">🔒</div>
-<p><strong>Vista de solo lectura.</strong> Puedes consultar las estadísticas generales del sistema.</p>
-</div>
 
 <div class="stats-grid">
-<div class="stat-card">
+<!-- TARJETA 1: TOTAL INCIDENCIAS CON DETALLES -->
+<div class="stat-card stat-card-detailed">
 <div class="icon">📋</div>
 <span class="number" id="totalIncidencias">0</span>
 <span class="label">Total Incidencias</span>
+<div class="stat-details">
+<div class="stat-detail-item">
+<span class="detail-label">Este mes:</span>
+<span class="detail-value" id="incidenciasMes">0</span>
+</div>
+<div class="stat-breakdown">
+<div class="breakdown-item">
+<span class="breakdown-dot leve"></span>
+<span class="breakdown-text">Leves: <strong id="incidenciasLeves">0</strong></span>
+</div>
+<div class="breakdown-item">
+<span class="breakdown-dot grave"></span>
+<span class="breakdown-text">Graves: <strong id="incidenciasGraves">0</strong></span>
+</div>
+<div class="breakdown-item">
+<span class="breakdown-dot muy-grave"></span>
+<span class="breakdown-text">Muy Graves: <strong id="incidenciasMuyGraves">0</strong></span>
+</div>
+</div>
+</div>
 </div>
 
-<div class="stat-card">
+<!-- TARJETA 2: TOTAL TARDANZAS CON ESTE MES -->
+<div class="stat-card stat-card-detailed">
 <div class="icon">⏰</div>
 <span class="number" id="totalTardanzas">0</span>
 <span class="label">Total Tardanzas</span>
+<div class="stat-details">
+<div class="stat-detail-item">
+<span class="detail-label">Este mes:</span>
+<span class="detail-value" id="tardanzasMes">0</span>
+</div>
+</div>
 </div>
 
+<!-- TARJETA 3: ESTUDIANTES REGISTRADOS -->
 <div class="stat-card">
 <div class="icon">👥</div>
 <span class="number" id="totalEstudiantes">0</span>
 <span class="label">Estudiantes Registrados</span>
 </div>
 
+<!-- TARJETA 4: CONTACTOS REGISTRADOS -->
 <div class="stat-card">
-<div class="icon">📅</div>
-<span class="number" id="incidenciasMes">0</span>
-<span class="label">Incidencias Este Mes</span>
-</div>
-
-<div class="stat-card">
-<div class="icon">🚨</div>
-<span class="number" id="tardanzasMes">0</span>
-<span class="label">Tardanzas Este Mes</span>
-</div>
-
-<div class="stat-card">
-<div class="icon">📈</div>
-<span class="number" id="promedio">0%</span>
-<span class="label">Tasa de Convivencia</span>
+<div class="icon">📞</div>
+<span class="number" id="totalContactos">0</span>
+<span class="label">Contactos Registrados</span>
 </div>
 </div>
 
-<div class="info-message">
-<div class="info-message-icon">📊</div>
-<h3>Estadísticas en Tiempo Real</h3>
-<p>Las estadísticas mostradas arriba se actualizan automáticamente desde Google Sheets. Para ver reportes más detallados o exportar datos, contacta al administrador del sistema.</p>
-</div>
 </div>
 </div>
 
@@ -216,7 +300,8 @@ header { flex-direction: column; text-align: center; }
 let CONFIG = { 
 urlIncidencias: 'https://script.google.com/macros/s/AKfycbwnCHIHNum-8uCHLbuE5NvwJeVmVMF6hCLWOAQQRUOwsU5GK_vpkrxifDFlMat1tP-z/exec',
 urlTardanzas: 'https://script.google.com/macros/s/AKfycbxI2JCRc-f0MdokDyepK_UOPf_gAbjYpCWzqe6ShqhRIP7uurohjBdswChKHaExsT2Riw/exec',
-urlEstudiantes: 'https://script.google.com/macros/s/AKfycby-ceKgHZzTxQzcVcNiOWaN5aNDoqtIlihVcOZAp0_5hIVcv115GKHtfdjFPq43ttCEuA/exec'
+urlEstudiantes: 'https://script.google.com/macros/s/AKfycby-ceKgHZzTxQzcVcNiOWaN5aNDoqtIlihVcOZAp0_5hIVcv115GKHtfdjFPq43ttCEuA/exec',
+urlContactos: 'https://script.google.com/macros/s/AKfycbxcnvwmyorCWze_CkDPEUtdHPpD0qPbGCtse4Ku16yxwhVo-8AjnXpKTudVi-0dVwOK/exec'
 };
 
 window.addEventListener('load', function() {
@@ -264,22 +349,44 @@ if (CONFIG.urlEstudiantes) {
 estudiantes = await cargarDatosDesdeGoogleSheets(CONFIG.urlEstudiantes);
 }
 
+// Cargar contactos
+let contactos = [];
+if (CONFIG.urlContactos) {
+contactos = await cargarDatosDesdeGoogleSheets(CONFIG.urlContactos);
+}
+
 // Calcular estadísticas
 const mesActual = new Date().getMonth();
 const añoActual = new Date().getFullYear();
 
 const incidenciasMes = incidencias.filter(inc => {
 try {
-const fecha = new Date(inc.fecha);
+const fecha = new Date(inc['Fecha y Hora']);
 return fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
 } catch {
 return false;
 }
 });
 
+// Calcular incidencias por tipo
+const incidenciasLeves = incidencias.filter(inc => {
+const tipo = (inc['Tipo de falta'] || '').toLowerCase();
+return tipo.includes('leve') && !tipo.includes('grave');
+}).length;
+
+const incidenciasGraves = incidencias.filter(inc => {
+const tipo = (inc['Tipo de falta'] || '').toLowerCase();
+return tipo === 'grave' || tipo.includes('falta grave');
+}).length;
+
+const incidenciasMuyGraves = incidencias.filter(inc => {
+const tipo = (inc['Tipo de falta'] || '').toLowerCase();
+return tipo.includes('muy grave');
+}).length;
+
 const tardanzasMes = tardanzas.filter(tard => {
 try {
-const fecha = new Date(tard.fecha);
+const fecha = new Date(tard['Fecha']);
 return fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
 } catch {
 return false;
@@ -288,18 +395,22 @@ return false;
 
 // Actualizar UI
 document.getElementById('totalIncidencias').textContent = incidencias.length;
-document.getElementById('totalTardanzas').textContent = tardanzas.length;
-document.getElementById('totalEstudiantes').textContent = estudiantes.length;
 document.getElementById('incidenciasMes').textContent = incidenciasMes.length;
+document.getElementById('incidenciasLeves').textContent = incidenciasLeves;
+document.getElementById('incidenciasGraves').textContent = incidenciasGraves;
+document.getElementById('incidenciasMuyGraves').textContent = incidenciasMuyGraves;
+
+document.getElementById('totalTardanzas').textContent = tardanzas.length;
 document.getElementById('tardanzasMes').textContent = tardanzasMes.length;
 
-// Calcular tasa de convivencia (ejemplo simple)
-const tasa = estudiantes.length > 0 
-? Math.round(((estudiantes.length - incidenciasMes.length) / estudiantes.length) * 100)
-: 0;
-document.getElementById('promedio').textContent = tasa + '%';
+document.getElementById('totalEstudiantes').textContent = estudiantes.length;
+document.getElementById('totalContactos').textContent = contactos.length;
 
 console.log('✅ Estadísticas cargadas');
+console.log(`📊 Incidencias: ${incidencias.length} (Mes: ${incidenciasMes.length})`);
+console.log(`📊 Por tipo: Leves=${incidenciasLeves}, Graves=${incidenciasGraves}, Muy Graves=${incidenciasMuyGraves}`);
+console.log(`📊 Tardanzas: ${tardanzas.length} (Mes: ${tardanzasMes.length})`);
+console.log(`📊 Estudiantes: ${estudiantes.length}, Contactos: ${contactos.length}`);
 } catch (error) {
 console.error('Error cargando estadísticas:', error);
 }
