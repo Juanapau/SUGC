@@ -320,7 +320,7 @@ tipo
 
 if (username) {
 usuariosObj[username.toLowerCase()] = {
-password: password,
+password: String(password), // Convertir a string
 rol: tipo,
 nombre: nombreCompleto,
 cargo: cargo
