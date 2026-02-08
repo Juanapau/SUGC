@@ -498,17 +498,114 @@ cargarEstadisticas();
 });
 
 // ==========================================
-// CARGAR ESTADÍSTICAS
+// CARGAR ESTADÍSTICAS REALES
 // ==========================================
 
-function cargarEstadisticas() {
-document.getElementById('statIncidencias').textContent = '124';
-document.getElementById('statIncidenciasMes').textContent = '18';
+// URLs de Google Sheets
+const CONFIG_STATS = {
+urlIncidencias: 'https://script.google.com/macros/s/AKfycbwnCHIHNum-8uCHLbuE5NvwJeVmVMF6hCLWOAQQRUOwsU5GK_vpkrxifDFlMat1tP-z/exec',
+urlTardanzas: 'https://script.google.com/macros/s/AKfycbxI2JCRc-f0MdokDyepK_UOPf_gAbjYpCWzqe6ShqhRIP7uurohjBdswChKHaExsT2Riw/exec'
+};
 
-document.getElementById('statTardanzas').textContent = '56';
-document.getElementById('statTardanzasHoy').textContent = '3';
+async function cargarDatosDesdeGoogleSheets(url) {
+try {
+const response = await fetch(url);
+if (!response.ok) throw new Error('Error en la respuesta');
+return await response.json();
+} catch (error) {
+console.error('Error cargando datos:', error);
+return [];
+}
+}
 
-console.log('📊 Estadísticas cargadas');
+async function cargarEstadisticas() {
+console.log('📊 ===== INICIANDO CARGA DE ESTADÍSTICAS =====');
+console.log('📊 URLs configuradas:');
+console.log('  - Incidencias:', CONFIG_STATS.urlIncidencias);
+console.log('  - Tardanzas:', CONFIG_STATS.urlTardanzas);
+
+// Valores por defecto mientras carga
+document.getElementById('statIncidencias').textContent = '...';
+document.getElementById('statIncidenciasMes').textContent = '...';
+document.getElementById('statTardanzas').textContent = '...';
+document.getElementById('statTardanzasHoy').textContent = '...';
+
+console.log('📊 Valores iniciales establecidos en "..."');
+
+try {
+// Cargar incidencias
+console.log('📥 Cargando incidencias desde Google Sheets...');
+const incidencias = await cargarDatosDesdeGoogleSheets(CONFIG_STATS.urlIncidencias);
+console.log('📥 Incidencias recibidas:', incidencias.length, 'registros');
+
+const totalIncidencias = incidencias.length;
+
+// Calcular incidencias del mes actual
+const mesActual = new Date().getMonth();
+const añoActual = new Date().getFullYear();
+console.log('📅 Mes actual:', mesActual, 'Año:', añoActual);
+
+const incidenciasMes = incidencias.filter(inc => {
+try {
+const fecha = new Date(inc['Fecha y Hora']);
+return fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
+} catch {
+return false;
+}
+}).length;
+
+console.log('📊 Total incidencias:', totalIncidencias);
+console.log('📊 Incidencias del mes:', incidenciasMes);
+
+// Actualizar incidencias
+console.log('🔄 Actualizando elementos HTML...');
+document.getElementById('statIncidencias').textContent = totalIncidencias;
+document.getElementById('statIncidenciasMes').textContent = incidenciasMes;
+
+console.log(`✅ Incidencias actualizadas: ${totalIncidencias} (Mes: ${incidenciasMes})`);
+
+// Cargar tardanzas
+console.log('📥 Cargando tardanzas desde Google Sheets...');
+const tardanzas = await cargarDatosDesdeGoogleSheets(CONFIG_STATS.urlTardanzas);
+console.log('📥 Tardanzas recibidas:', tardanzas.length, 'registros');
+
+const totalTardanzas = tardanzas.length;
+
+// Calcular tardanzas de hoy
+const hoy = new Date().toISOString().split('T')[0];
+console.log('📅 Fecha de hoy:', hoy);
+
+const tardanzasHoy = tardanzas.filter(tard => {
+try {
+const fecha = new Date(tard.fecha || tard.Fecha);
+return fecha.toISOString().split('T')[0] === hoy;
+} catch {
+return false;
+}
+}).length;
+
+console.log('📊 Total tardanzas:', totalTardanzas);
+console.log('📊 Tardanzas de hoy:', tardanzasHoy);
+
+// Actualizar tardanzas
+document.getElementById('statTardanzas').textContent = totalTardanzas;
+document.getElementById('statTardanzasHoy').textContent = tardanzasHoy;
+
+console.log(`✅ Tardanzas actualizadas: ${totalTardanzas} (Hoy: ${tardanzasHoy})`);
+console.log('📊 ===== ESTADÍSTICAS REALES CARGADAS =====');
+
+} catch (error) {
+console.error('❌ ===== ERROR CARGANDO ESTADÍSTICAS =====');
+console.error('❌ Error completo:', error);
+console.error('❌ Tipo:', error.name);
+console.error('❌ Mensaje:', error.message);
+
+// Mostrar 0 en caso de error
+document.getElementById('statIncidencias').textContent = '0';
+document.getElementById('statIncidenciasMes').textContent = '0';
+document.getElementById('statTardanzas').textContent = '0';
+document.getElementById('statTardanzasHoy').textContent = '0';
+}
 }
 
 // ==========================================
