@@ -438,6 +438,8 @@ if (datos && datos.length > 0) {
 datosIncidencias = datos;
 incidenciasFiltradas = datos;
 console.log('✅ Incidencias cargadas:', datos.length);
+console.log('🔍 ESTRUCTURA DEL PRIMER REGISTRO:', datos[0]);
+console.log('🔍 PROPIEDADES DISPONIBLES:', Object.keys(datos[0]));
 mostrarIncidencias();
 } else {
 console.log('⚠️ No hay datos o la respuesta está vacía');
@@ -470,19 +472,19 @@ return;
 }
 
 tbody.innerHTML = incidenciasFiltradas.map(inc => {
-const tipo = inc.tipo || 'N/A';
+const tipo = inc['Tipo de falta'] || 'N/A';
 const tipoClass = tipo !== 'N/A' ? tipo.toLowerCase().replace(/ /g, '-') : 'leve';
 
 return `
 <tr>
-<td>${formatearFecha(inc.fecha)}</td>
-<td><strong>${inc.estudiante || 'N/A'}</strong></td>
-<td>${inc.curso || 'N/A'}</td>
+<td>${formatearFecha(inc['Fecha y Hora'])}</td>
+<td><strong>${inc['Nombre Estudiante'] || 'N/A'}</strong></td>
+<td>${inc['Curso'] || 'N/A'}</td>
 <td><span class="status-badge badge-${tipoClass}">${tipo}</span></td>
-<td>${inc.tipoConducta || 'N/A'}</td>
-<td>${inc.docente || 'N/A'}</td>
-<td style="max-width:250px;">${inc.descripcion || 'N/A'}</td>
-<td style="max-width:200px;">${inc.seguimiento || '-'}</td>
+<td>${inc['Tipo de Conducta'] || 'N/A'}</td>
+<td>${inc['Docente'] || 'N/A'}</td>
+<td style="max-width:250px;">${inc['Descripción'] || 'N/A'}</td>
+<td style="max-width:200px;">${inc['Seguimiento UGC'] || '-'}</td>
 </tr>
 `;
 }).join('');
@@ -513,9 +515,9 @@ const filtrarCurso = document.getElementById('filtrarCurso').value;
 const filtrarTipo = document.getElementById('filtrarTipo').value;
 
 incidenciasFiltradas = datosIncidencias.filter(inc => {
-const cumpleEstudiante = !buscarEstudiante || (inc.estudiante && inc.estudiante.toLowerCase().includes(buscarEstudiante));
-const cumpleCurso = !filtrarCurso || inc.curso === filtrarCurso;
-const cumpleTipo = !filtrarTipo || inc.tipo === filtrarTipo;
+const cumpleEstudiante = !buscarEstudiante || (inc['Nombre Estudiante'] && inc['Nombre Estudiante'].toLowerCase().includes(buscarEstudiante));
+const cumpleCurso = !filtrarCurso || inc['Curso'] === filtrarCurso;
+const cumpleTipo = !filtrarTipo || inc['Tipo de falta'] === filtrarTipo;
 
 return cumpleEstudiante && cumpleCurso && cumpleTipo;
 });
