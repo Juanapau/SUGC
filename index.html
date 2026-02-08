@@ -331,8 +331,46 @@ cargo: cargo
 console.log('🔍 USUARIOS FINALES:', usuariosObj);
 console.log('🔍 USUARIOS DISPONIBLES:', Object.keys(usuariosObj));
 
-USUARIOS_CACHE = usuariosObj;
-return usuariosObj;
+// AGREGAR USUARIOS DE RESPALDO SIEMPRE (por si Google Sheets no los tiene)
+const usuariosRespaldo = {
+'jpaulino': {
+password: 'admin123',
+rol: 'administrador',
+nombre: 'Juana Paulino',
+cargo: 'Administrador del Sistema'
+},
+'wcaraballo': {
+password: 'consultaw123',
+rol: 'consulta',
+nombre: 'Wenlly Caraballo',
+cargo: 'Director Académico'
+},
+'gduran': {
+password: 'consultag123',
+rol: 'consulta',
+nombre: 'Glennys M. Durán',
+cargo: 'Coordinadora Pedagógica'
+},
+'ybatista': {
+password: 'consultay123',
+rol: 'consulta',
+nombre: 'Yernibel Batista',
+cargo: 'Directora Regente'
+},
+'afernandez': {
+password: 'consultaa123',
+rol: 'consulta',
+nombre: 'Anabel Fernández',
+cargo: 'Orientadora Escolar'
+}
+};
+
+// Combinar usuarios de Sheets + usuarios de respaldo
+const usuariosFinales = { ...usuariosRespaldo, ...usuariosObj };
+console.log('🔍 TOTAL USUARIOS (Sheets + Respaldo):', Object.keys(usuariosFinales));
+
+USUARIOS_CACHE = usuariosFinales;
+return usuariosFinales;
 } catch (error) {
 console.error('❌ Error cargando usuarios:', error);
 
