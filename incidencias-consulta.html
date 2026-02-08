@@ -627,6 +627,46 @@ sugerencias.style.display = 'none';
 }
 });
 
+// ==========================================
+// RE-HABILITAR FILTROS (después de auth-guard)
+// ==========================================
+
+// Esperar a que auth-guard deshabilite controles, luego re-habilitar los filtros
+setTimeout(function() {
+const filtros = document.querySelectorAll('.filter-select');
+filtros.forEach(filtro => {
+filtro.disabled = false;
+filtro.style.opacity = '1';
+filtro.style.cursor = 'pointer';
+filtro.style.background = 'white';
+filtro.style.pointerEvents = 'auto';
+});
+console.log('✅ Filtros re-habilitados');
+}, 1000);
+
+// También re-habilitar cada 500ms por si auth-guard se ejecuta tarde
+const intervalo = setInterval(function() {
+const filtros = document.querySelectorAll('.filter-select');
+let todosHabilitados = true;
+
+filtros.forEach(filtro => {
+if (filtro.disabled) {
+filtro.disabled = false;
+filtro.style.opacity = '1';
+filtro.style.cursor = 'pointer';
+filtro.style.background = 'white';
+filtro.style.pointerEvents = 'auto';
+todosHabilitados = false;
+}
+});
+
+// Si todos están habilitados por 3 ciclos, detener el intervalo
+if (todosHabilitados) {
+clearInterval(intervalo);
+console.log('✅ Filtros permanentemente habilitados');
+}
+}, 500);
+
 console.log('📋 Módulo de incidencias (consulta) cargado');
 </script>
 
