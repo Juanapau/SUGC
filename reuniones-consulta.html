@@ -213,18 +213,19 @@ style="width: 100%;">
 <table>
 <thead>
 <tr>
-<th>Fecha</th>
-<th>Tipo</th>
-<th>Estudiante</th>
-<th>Curso</th>
-<th>Padre/Madre</th>
-<th>Motivo</th>
-<th>Estado</th>
-<th>Seguimiento</th>
+<th style="width:8%;">Fecha</th>
+<th style="width:6%;">Tipo</th>
+<th style="width:12%;">Estudiante</th>
+<th style="width:11%;">Padre/Madre</th>
+<th style="width:7%;">¿Asistió?</th>
+<th style="width:7%;">Reuniones</th>
+<th style="width:15%;">Motivo</th>
+<th style="width:10%;">Estado</th>
+<th style="width:8%;">Seguimiento</th>
 </tr>
 </thead>
 <tbody id="bodyReuniones">
-<tr><td colspan="8" style="text-align:center;padding:40px;">📥 Cargando reuniones...</td></tr>
+<tr><td colspan="9" style="text-align:center;padding:40px;">📥 Cargando reuniones...</td></tr>
 </tbody>
 </table>
 </div>
@@ -276,14 +277,14 @@ reunionesFiltradas = datos;
 console.log('✅ Reuniones cargadas:', datos.length);
 mostrarReuniones();
 } else {
-tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:60px;"><div style="font-size:4em;margin-bottom:15px;opacity:0.5;">📭</div><p>No hay reuniones registradas</p></td></tr>';
+tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:60px;"><div style="font-size:4em;margin-bottom:15px;opacity:0.5;">📭</div><p>No hay reuniones registradas</p></td></tr>';
 }
 } catch (error) {
 console.error('Error:', error);
-tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#dc3545;">⚠️ Error al cargar datos.</td></tr>';
+tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#dc3545;">⚠️ Error al cargar datos.</td></tr>';
 }
 } else {
-tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#dc3545;">⚠️ No hay URL de Google Sheets configurada.</td></tr>';
+tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#dc3545;">⚠️ No hay URL de Google Sheets configurada.</td></tr>';
 }
 }
 
@@ -291,7 +292,7 @@ function mostrarReuniones() {
 const tbody = document.getElementById('bodyReuniones');
 
 if (reunionesFiltradas.length === 0) {
-tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:60px;">No se encontraron resultados.</td></tr>';
+tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:60px;">No se encontraron resultados.</td></tr>';
 return;
 }
 
@@ -302,15 +303,54 @@ const badgeClass = estado === 'Cumplido' ? 'badge-cumplido'
 : estado.includes('Parcial') ? 'badge-parcial'
 : 'badge-seguimiento';
 
+// Contar cuántas reuniones tiene este estudiante
+const nombreEstudiante = r['Nombre Estudiante'] || '';
+const totalReuniones = datosReuniones.filter(reunion => 
+reunion['Nombre Estudiante'] === nombreEstudiante
+).length;
+
+// Badge para reuniones
+const reunionesBadge = totalReuniones === 1 ? 'badge-seguimiento'
+: totalReuniones === 2 ? 'badge-parcial'
+: 'badge-no-cumplido';
+
+// Badge para asistió
+const asistio = r['Asistió'] || '';
+const asistioIcon = asistio.toLowerCase().includes('sí') || asistio.toLowerCase().includes('si') 
+? '✅ Sí' 
+: asistio.toLowerCase().includes('no') 
+? '❌ No' 
+: '-';
+const asistioBadge = asistio.toLowerCase().includes('sí') || asistio.toLowerCase().includes('si')
+? 'badge-cumplido'
+: 'badge-no-cumplido';
+
 return `<tr>
-<td>${formatearFecha(r['Fecha y Hora'])}</td>
-<td>${r['Tipo'] || 'N/A'}</td>
-<td><strong>${r['Nombre Estudiante'] || 'N/A'}</strong></td>
-<td>${r['Curso'] || 'N/A'}</td>
-<td>${r['Padre/Madre Presente'] || 'N/A'}</td>
-<td style="max-width:200px;">${r['Motivo'] || 'N/A'}</td>
+<td style="font-size:0.85em;">
+<div>${formatearFechaCorta(r['Fecha y Hora'])}</div>
+<div style="color:#666;font-size:0.9em;">${formatearHora(r['Fecha y Hora'])}</div>
+</td>
+<td>
+${r['Tipo'] === 'Presencial' ? '🏫' : '📞'}<br>
+<span style="font-size:0.85em;">${r['Tipo'] || 'N/A'}</span>
+</td>
+<td>
+<strong>${nombreEstudiante || 'N/A'}</strong><br>
+<span style="color:#666;font-size:0.85em;">${r['Curso'] || ''}</span>
+</td>
+<td style="font-size:0.85em;">
+<div><strong>${r['Nombre Padre/Madre'] || r['Padre/Madre Presente'] || 'N/A'}</strong></div>
+<div style="color:#666;font-size:0.9em;">${r['Padre/Madre Presente'] || ''}</div>
+</td>
+<td style="text-align:center;">
+<span class="badge ${asistioBadge}">${asistioIcon}</span>
+</td>
+<td style="text-align:center;">
+<span class="badge ${reunionesBadge}">${totalReuniones}ª vez</span>
+</td>
+<td style="font-size:0.85em;">${r['Motivo'] || 'N/A'}</td>
 <td><span class="badge ${badgeClass}">${estado}</span></td>
-<td>${formatearFecha(r['Fecha Seguimiento']) || '-'}</td>
+<td style="font-size:0.85em;">${formatearFechaCorta(r['Fecha Seguimiento']) || '-'}</td>
 </tr>`;
 }).join('');
 
@@ -442,6 +482,26 @@ const fecha = new Date(fechaStr);
 return `${String(fecha.getDate()).padStart(2, '0')}/${String(fecha.getMonth() + 1).padStart(2, '0')}/${fecha.getFullYear()}`;
 } catch (error) {
 return fechaStr;
+}
+}
+
+function formatearFechaCorta(fechaStr) {
+if (!fechaStr) return 'N/A';
+try {
+const fecha = new Date(fechaStr);
+return `${String(fecha.getDate()).padStart(2, '0')}/${String(fecha.getMonth() + 1).padStart(2, '0')}/${fecha.getFullYear()}`;
+} catch (error) {
+return fechaStr;
+}
+}
+
+function formatearHora(fechaStr) {
+if (!fechaStr) return '';
+try {
+const fecha = new Date(fechaStr);
+return `${String(fecha.getHours()).padStart(2, '0')}:${String(fecha.getMinutes()).padStart(2, '0')} ${ fecha.getHours() >= 12 ? 'p. m.' : 'a. m.'}`;
+} catch (error) {
+return '';
 }
 }
 
