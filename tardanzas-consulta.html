@@ -387,15 +387,12 @@ const totalMes = parseInt(t['Total Mes']) || 0;
 // Clase para resaltar toda la fila
 const claseFila = totalMes >= 4 ? 'fila-peligro' : totalMes === 3 ? 'fila-advertencia' : '';
 
-// Solo mostrar badge si NO hay clase de fila (es decir, si es < 3)
-const badge = (totalMes < 3 && totalMes > 0) ? 'badge-warning' : '';
-
 return `<tr class="${claseFila}">
 <td>${formatearFecha(t['Fecha'])}</td>
 <td><strong>${t['Nombre Estudiante'] || 'N/A'}</strong></td>
 <td>${t['Curso'] || 'N/A'}</td>
 <td>${t['Mes'] || 'N/A'}</td>
-<td>${badge ? `<span class="${badge}">${totalMes}</span>` : `<strong>${totalMes}</strong>`}</td>
+<td><strong>${totalMes}</strong></td>
 </tr>`;
 }).join('');
 }
