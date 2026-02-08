@@ -296,21 +296,21 @@ return;
 }
 
 tbody.innerHTML = reunionesFiltradas.map(r => {
-const estado = r.estadoAcuerdo || r['Estado del Acuerdo'] || 'N/A';
+const estado = r['Estado'] || 'N/A';
 const badgeClass = estado === 'Cumplido' ? 'badge-cumplido'
 : estado === 'No cumplido' ? 'badge-no-cumplido'
 : estado.includes('Parcial') ? 'badge-parcial'
 : 'badge-seguimiento';
 
 return `<tr>
-<td>${formatearFecha(r.fecha || r.Fecha)}</td>
-<td>${r.tipo || r['Tipo de Reunión'] || 'N/A'}</td>
-<td><strong>${r.estudiante || r.Estudiante || 'N/A'}</strong></td>
-<td>${r.curso || r.Curso || 'N/A'}</td>
-<td>${r.padrePresente || r['Padre/Madre Presente'] || 'N/A'}</td>
-<td style="max-width:200px;">${r.motivo || r['Motivo de la Reunión'] || 'N/A'}</td>
+<td>${formatearFecha(r['Fecha y Hora'])}</td>
+<td>${r['Tipo'] || 'N/A'}</td>
+<td><strong>${r['Nombre Estudiante'] || 'N/A'}</strong></td>
+<td>${r['Curso'] || 'N/A'}</td>
+<td>${r['Padre/Madre Presente'] || 'N/A'}</td>
+<td style="max-width:200px;">${r['Motivo'] || 'N/A'}</td>
 <td><span class="badge ${badgeClass}">${estado}</span></td>
-<td>${formatearFecha(r.fechaSeguimiento || r['Fecha de Seguimiento']) || '-'}</td>
+<td>${formatearFecha(r['Fecha Seguimiento']) || '-'}</td>
 </tr>`;
 }).join('');
 
@@ -323,9 +323,9 @@ const filtrarCurso = document.getElementById('filtrarCurso').value;
 const filtrarEstado = document.getElementById('filtrarEstado').value;
 
 reunionesFiltradas = datosReuniones.filter(r => {
-const estudiante = r.estudiante || r.Estudiante || '';
-const curso = r.curso || r.Curso || '';
-const estado = r.estadoAcuerdo || r['Estado del Acuerdo'] || '';
+const estudiante = r['Nombre Estudiante'] || '';
+const curso = r['Curso'] || '';
+const estado = r['Estado'] || '';
 
 const cumpleEstudiante = !buscarEstudiante || estudiante.toLowerCase().includes(buscarEstudiante);
 const cumpleCurso = !filtrarCurso || curso === filtrarCurso;
@@ -359,7 +359,7 @@ return;
 }
 
 const estudiantesUnicos = [...new Set(datosReuniones
-.map(r => r.estudiante || r.Estudiante)
+.map(r => r['Nombre Estudiante'])
 .filter(nombre => nombre && nombre.toLowerCase().includes(texto))
 )].sort();
 
