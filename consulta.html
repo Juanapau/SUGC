@@ -605,7 +605,7 @@ const totalReuniones = reuniones.length;
 
 const reunionesMes = reuniones.filter(reun => {
 try {
-const fecha = new Date(reun.fecha || reun.Fecha);
+const fecha = new Date(reun['Fecha y Hora']);
 return fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
 } catch {
 return false;
