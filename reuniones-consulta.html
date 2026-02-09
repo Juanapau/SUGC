@@ -303,11 +303,19 @@ const badgeClass = estado === 'Cumplido' ? 'badge-cumplido'
 : estado.includes('Parcial') ? 'badge-parcial'
 : 'badge-seguimiento';
 
-// Contar cuántas reuniones tiene este estudiante
+// Contar cuántas reuniones tiene este estudiante HASTA esta fecha
 const nombreEstudiante = r['Nombre Estudiante'] || '';
-const totalReuniones = datosReuniones.filter(reunion => 
-reunion['Nombre Estudiante'] === nombreEstudiante
-).length;
+const fechaActual = new Date(r['Fecha y Hora']);
+
+const totalReuniones = datosReuniones.filter(reunion => {
+if (reunion['Nombre Estudiante'] !== nombreEstudiante) return false;
+try {
+const fechaReunion = new Date(reunion['Fecha y Hora']);
+return fechaReunion <= fechaActual;
+} catch {
+return false;
+}
+}).length;
 
 // Badge para reuniones
 const reunionesBadge = totalReuniones === 1 ? 'badge-seguimiento'
