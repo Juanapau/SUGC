@@ -370,11 +370,11 @@ style="width: 100%;">
 <th>Estudiante</th>
 <th>Curso</th>
 <th>Tipo</th>
-<th>Conducta</th>
 <th>Docente</th>
-<th>Reuniones</th>
+<th>Tipo de Conducta</th>
 <th>Descripción</th>
-<th>Seguimiento</th>
+<th>Acciones</th>
+<th>Seguimiento UGC</th>
 </tr>
 </thead>
 <tbody id="bodyIncidencias">
@@ -392,12 +392,10 @@ style="width: 100%;">
 // Datos de incidencias
 let datosIncidencias = [];
 let incidenciasFiltradas = [];
-let datosReuniones = []; // Para contar reuniones por estudiante
 
 // Configuración (cargada desde localStorage)
 let CONFIG = {
-urlIncidencias: 'https://script.google.com/macros/s/AKfycbwnCHIHNum-8uCHLbuE5NvwJeVmVMF6hCLWOAQQRUOwsU5GK_vpkrxifDFlMat1tP-z/exec',
-urlReuniones: 'https://script.google.com/macros/s/AKfycbxjky9LnAAqElohVjgLESUA2nh-ICXYWNDMGkVfGjwVEb1tc0HQAtg-sayrFMXH788aLA/exec'
+urlIncidencias: 'https://script.google.com/macros/s/AKfycbwnCHIHNum-8uCHLbuE5NvwJeVmVMF6hCLWOAQQRUOwsU5GK_vpkrxifDFlMat1tP-z/exec'
 };
 
 // Cargar configuración
@@ -454,18 +452,8 @@ return;
 tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#666;">📥 Cargando incidencias desde Google Sheets...</td></tr>';
 
 try {
-// Cargar incidencias
 const datos = await cargarDatosDesdeGoogleSheets(CONFIG.urlIncidencias);
-console.log('📊 Datos de incidencias recibidos:', datos);
-
-// Cargar reuniones para contar
-if (CONFIG.urlReuniones) {
-const reuniones = await cargarDatosDesdeGoogleSheets(CONFIG.urlReuniones);
-datosReuniones = reuniones || [];
-console.log('🤝 Datos de reuniones cargados:', datosReuniones.length);
-} else {
-console.log('⚠️ No hay URL de reuniones configurada');
-}
+console.log('📊 Datos recibidos:', datos);
 
 if (datos && datos.length > 0) {
 datosIncidencias = datos;
@@ -508,31 +496,16 @@ tbody.innerHTML = incidenciasFiltradas.map(inc => {
 const tipo = inc['Tipo de falta'] || 'N/A';
 const tipoClass = tipo !== 'N/A' ? tipo.toLowerCase().replace(/ /g, '-') : 'leve';
 
-// Contar reuniones de este estudiante
-const nombreEstudiante = inc['Nombre Estudiante'] || '';
-const totalReuniones = datosReuniones.filter(reunion => 
-reunion['Nombre Estudiante'] === nombreEstudiante
-).length;
-
-// Badge para reuniones
-const reunionesBadge = totalReuniones === 0 ? ''
-: totalReuniones === 1 ? 'badge-seguimiento'
-: totalReuniones === 2 ? 'badge-parcial'
-: 'badge-no-cumplido';
-
-const reunionesTexto = totalReuniones === 0 ? '-'
-: `${totalReuniones}ª vez`;
-
 return `
 <tr>
 <td>${formatearFecha(inc['Fecha y Hora'])}</td>
 <td><strong>${inc['Nombre Estudiante'] || 'N/A'}</strong></td>
 <td>${inc['Curso'] || 'N/A'}</td>
 <td><span class="status-badge badge-${tipoClass}">${tipo}</span></td>
-<td>${inc['Tipo de Conducta'] || 'N/A'}</td>
 <td>${inc['Docente'] || 'N/A'}</td>
-<td style="text-align:center;">${totalReuniones > 0 ? `<span class="status-badge ${reunionesBadge}">${reunionesTexto}</span>` : '-'}</td>
+<td>${inc['Tipo de Conducta'] || 'N/A'}</td>
 <td style="max-width:250px;">${inc['Descripción'] || 'N/A'}</td>
+<td style="max-width:200px;">${inc['Acciones'] || '-'}</td>
 <td style="max-width:200px;">${inc['Seguimiento UGC'] || '-'}</td>
 </tr>
 `;
