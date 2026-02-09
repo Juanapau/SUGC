@@ -421,24 +421,82 @@ console.log('🔍 Ejemplos de meses en datos:', ejemplosMeses);
 console.log('🔍 Mes buscado:', filtrarMes);
 }
 
-tardanzasFiltradas = datosTardanzas.filter(t => {
+// Si el filtro es "Exactamente 3" o "Más de 3", agrupar por mes
+if (filtro === '3' || filtro === 'mas3') {
+console.log('📊 Agrupando por mes para filtro:', filtro);
+
+// Primero filtrar por estudiante, curso y mes
+let tardanzasBase = datosTardanzas.filter(t => {
 const cumpleEstudiante = !buscarEstudiante || (t['Nombre Estudiante'] && t['Nombre Estudiante'].toLowerCase().includes(buscarEstudiante));
 const cumpleCurso = !filtrarCurso || t['Curso'] === filtrarCurso;
-
-// Comparación case-insensitive para el mes
 const mesTardanza = (t['Mes'] || '').toLowerCase();
 const mesFiltro = filtrarMes.toLowerCase();
 const cumpleMes = !filtrarMes || mesTardanza === mesFiltro;
+return cumpleEstudiante && cumpleCurso && cumpleMes;
+});
 
-const totalMes = parseInt(t['Total Mes']) || 0;
+// Agrupar por estudiante + mes + año
+const grupos = {};
+tardanzasBase.forEach(t => {
+const estudiante = t['Nombre Estudiante'] || '';
+const mes = t['Mes'] || '';
+const año = t['Año'] || '';
+const clave = `${estudiante}|${mes}|${año}`;
+
+if (!grupos[clave]) {
+grupos[clave] = {
+estudiante: estudiante,
+curso: t['Curso'],
+mes: mes,
+año: año,
+tardanzas: [],
+totalMes: 0
+};
+}
+grupos[clave].tardanzas.push(t);
+});
+
+// Calcular totales y filtrar según el criterio
+tardanzasFiltradas = [];
+Object.values(grupos).forEach(grupo => {
+grupo.totalMes = grupo.tardanzas.length;
+
+// Aplicar filtro de cantidad
 let cumpleFiltro = true;
-if (filtro === '3') cumpleFiltro = totalMes === 3;
-else if (filtro === 'mas3') cumpleFiltro = totalMes > 3;
+if (filtro === '3') cumpleFiltro = grupo.totalMes === 3;
+else if (filtro === 'mas3') cumpleFiltro = grupo.totalMes > 3;
 
-return cumpleEstudiante && cumpleCurso && cumpleMes && cumpleFiltro;
+if (cumpleFiltro) {
+// Tomar la ÚLTIMA tardanza del mes como representante
+const ultimaTardanza = grupo.tardanzas.sort((a, b) => {
+const fechaA = new Date(a['Fecha']);
+const fechaB = new Date(b['Fecha']);
+return fechaB - fechaA;
+})[0];
+
+// Agregar el total calculado
+ultimaTardanza['Total Mes'] = grupo.totalMes;
+tardanzasFiltradas.push(ultimaTardanza);
+}
+});
+
+console.log(`📊 Grupos encontrados: ${Object.keys(grupos).length}`);
+console.log(`📊 Resultados filtrados: ${tardanzasFiltradas.length}`);
+
+} else {
+// Para "Todas las tardanzas", mostrar normal
+tardanzasFiltradas = datosTardanzas.filter(t => {
+const cumpleEstudiante = !buscarEstudiante || (t['Nombre Estudiante'] && t['Nombre Estudiante'].toLowerCase().includes(buscarEstudiante));
+const cumpleCurso = !filtrarCurso || t['Curso'] === filtrarCurso;
+const mesTardanza = (t['Mes'] || '').toLowerCase();
+const mesFiltro = filtrarMes.toLowerCase();
+const cumpleMes = !filtrarMes || mesTardanza === mesFiltro;
+return cumpleEstudiante && cumpleCurso && cumpleMes;
 });
 
 console.log(`📊 Resultados: ${tardanzasFiltradas.length} de ${datosTardanzas.length} tardanzas`);
+}
+
 mostrarTardanzas();
 }
 
