@@ -304,7 +304,7 @@ padding: 8px 6px;
 <img src="./logo.png" alt="Logo" onerror="this.style.display='none'">
 <div class="header-title">
 <h1>Registro de Incidencias</h1>
-<p>Solo Lectura - CENSA</p>
+<p>Solo Lectura - PNSA</p>
 </div>
 </div>
 
@@ -370,13 +370,14 @@ style="width: 100%;">
 <th>Tipo</th>
 <th>Conducta</th>
 <th>Docente</th>
+<th>Reuniones</th>
 <th>Descripción</th>
 <th>Seguimiento</th>
 </tr>
 </thead>
 <tbody id="bodyIncidencias">
 <tr>
-<td colspan="8" class="loading">📥 Cargando incidencias...</td>
+<td colspan="9" class="loading">📥 Cargando incidencias...</td>
 </tr>
 </tbody>
 </table>
@@ -389,10 +390,12 @@ style="width: 100%;">
 // Datos de incidencias
 let datosIncidencias = [];
 let incidenciasFiltradas = [];
+let datosReuniones = []; // Para contar reuniones por estudiante
 
 // Configuración (cargada desde localStorage)
 let CONFIG = {
-urlIncidencias: 'https://script.google.com/macros/s/AKfycbwnCHIHNum-8uCHLbuE5NvwJeVmVMF6hCLWOAQQRUOwsU5GK_vpkrxifDFlMat1tP-z/exec'
+urlIncidencias: 'https://script.google.com/macros/s/AKfycbwnCHIHNum-8uCHLbuE5NvwJeVmVMF6hCLWOAQQRUOwsU5GK_vpkrxifDFlMat1tP-z/exec',
+urlReuniones: 'https://script.google.com/macros/s/AKfycbxjky9LnAAqElohVjgLESUA2nh-ICXYWNDMGkVfGjwVEb1tc0HQAtg-sayrFMXH788aLA/exec'
 };
 
 // Cargar configuración
@@ -442,15 +445,25 @@ console.log('🔗 URL configurada:', CONFIG.urlIncidencias);
 
 if (!CONFIG.urlIncidencias || CONFIG.urlIncidencias === '') {
 console.error('❌ No hay URL configurada');
-tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#dc3545;">⚠️ No hay URL de Google Sheets configurada. Contacta al administrador.</td></tr>';
+tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#dc3545;">⚠️ No hay URL de Google Sheets configurada. Contacta al administrador.</td></tr>';
 return;
 }
 
-tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#666;">📥 Cargando incidencias desde Google Sheets...</td></tr>';
+tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#666;">📥 Cargando incidencias desde Google Sheets...</td></tr>';
 
 try {
+// Cargar incidencias
 const datos = await cargarDatosDesdeGoogleSheets(CONFIG.urlIncidencias);
-console.log('📊 Datos recibidos:', datos);
+console.log('📊 Datos de incidencias recibidos:', datos);
+
+// Cargar reuniones para contar
+if (CONFIG.urlReuniones) {
+const reuniones = await cargarDatosDesdeGoogleSheets(CONFIG.urlReuniones);
+datosReuniones = reuniones || [];
+console.log('🤝 Datos de reuniones cargados:', datosReuniones.length);
+} else {
+console.log('⚠️ No hay URL de reuniones configurada');
+}
 
 if (datos && datos.length > 0) {
 datosIncidencias = datos;
@@ -467,7 +480,7 @@ mostrarSinDatos();
 console.error('❌ Error fatal:', error);
 tbody.innerHTML = `
 <tr>
-<td colspan="8" style="text-align:center;padding:40px;color:#dc3545;">
+<td colspan="9" style="text-align:center;padding:40px;color:#dc3545;">
 <div style="font-size:2em;margin-bottom:10px;">⚠️</div>
 <p style="font-weight:600;margin-bottom:10px;">Error al cargar datos</p>
 <p style="font-size:0.9em;margin-bottom:15px;">${error.message}</p>
@@ -493,6 +506,21 @@ tbody.innerHTML = incidenciasFiltradas.map(inc => {
 const tipo = inc['Tipo de falta'] || 'N/A';
 const tipoClass = tipo !== 'N/A' ? tipo.toLowerCase().replace(/ /g, '-') : 'leve';
 
+// Contar reuniones de este estudiante
+const nombreEstudiante = inc['Nombre Estudiante'] || '';
+const totalReuniones = datosReuniones.filter(reunion => 
+reunion['Nombre Estudiante'] === nombreEstudiante
+).length;
+
+// Badge para reuniones
+const reunionesBadge = totalReuniones === 0 ? ''
+: totalReuniones === 1 ? 'badge-seguimiento'
+: totalReuniones === 2 ? 'badge-parcial'
+: 'badge-no-cumplido';
+
+const reunionesTexto = totalReuniones === 0 ? '-'
+: `${totalReuniones}ª vez`;
+
 return `
 <tr>
 <td>${formatearFecha(inc['Fecha y Hora'])}</td>
@@ -501,6 +529,7 @@ return `
 <td><span class="status-badge badge-${tipoClass}">${tipo}</span></td>
 <td>${inc['Tipo de Conducta'] || 'N/A'}</td>
 <td>${inc['Docente'] || 'N/A'}</td>
+<td style="text-align:center;">${totalReuniones > 0 ? `<span class="status-badge ${reunionesBadge}">${reunionesTexto}</span>` : '-'}</td>
 <td style="max-width:250px;">${inc['Descripción'] || 'N/A'}</td>
 <td style="max-width:200px;">${inc['Seguimiento UGC'] || '-'}</td>
 </tr>
@@ -515,7 +544,7 @@ function mostrarSinDatos() {
 const tbody = document.getElementById('bodyIncidencias');
 tbody.innerHTML = `
 <tr>
-<td colspan="8">
+<td colspan="9">
 <div class="no-data">
 <div class="no-data-icon">📭</div>
 <p style="font-size:1.2em;font-weight:600;margin-bottom:5px;">No hay incidencias registradas</p>
