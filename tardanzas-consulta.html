@@ -421,9 +421,8 @@ console.log('🔍 Ejemplos de meses en datos:', ejemplosMeses);
 console.log('🔍 Mes buscado:', filtrarMes);
 }
 
-// Si el filtro es "Exactamente 3" o "Más de 3", agrupar por mes
-if (filtro === '3' || filtro === 'mas3') {
-console.log('📊 Agrupando por mes para filtro:', filtro);
+// 🆕 SIEMPRE AGRUPAR POR ESTUDIANTE-MES-AÑO (igual que en app.js)
+console.log('📊 Agrupando por estudiante-mes-año...');
 
 // Primero filtrar por estudiante, curso y mes
 let tardanzasBase = datosTardanzas.filter(t => {
@@ -465,6 +464,7 @@ grupo.totalMes = grupo.tardanzas.length;
 let cumpleFiltro = true;
 if (filtro === '3') cumpleFiltro = grupo.totalMes === 3;
 else if (filtro === 'mas3') cumpleFiltro = grupo.totalMes > 3;
+// Si es 'todas', mostrar todos los grupos
 
 if (cumpleFiltro) {
 // Tomar la ÚLTIMA tardanza del mes como representante
@@ -482,20 +482,6 @@ tardanzasFiltradas.push(ultimaTardanza);
 
 console.log(`📊 Grupos encontrados: ${Object.keys(grupos).length}`);
 console.log(`📊 Resultados filtrados: ${tardanzasFiltradas.length}`);
-
-} else {
-// Para "Todas las tardanzas", mostrar normal
-tardanzasFiltradas = datosTardanzas.filter(t => {
-const cumpleEstudiante = !buscarEstudiante || (t['Nombre Estudiante'] && t['Nombre Estudiante'].toLowerCase().includes(buscarEstudiante));
-const cumpleCurso = !filtrarCurso || t['Curso'] === filtrarCurso;
-const mesTardanza = (t['Mes'] || '').toLowerCase();
-const mesFiltro = filtrarMes.toLowerCase();
-const cumpleMes = !filtrarMes || mesTardanza === mesFiltro;
-return cumpleEstudiante && cumpleCurso && cumpleMes;
-});
-
-console.log(`📊 Resultados: ${tardanzasFiltradas.length} de ${datosTardanzas.length} tardanzas`);
-}
 
 mostrarTardanzas();
 }
