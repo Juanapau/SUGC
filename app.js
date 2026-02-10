@@ -802,14 +802,14 @@ function crearModalTardanzas() {
             
             <div class="search-bar">
                 <div style="position:relative;flex:1;min-width:200px;">
-                    <input type="text" id="buscarTard" data-sugerencias="sugerenciasBuscarTard" placeholder="🔍 Buscar estudiante..." style="width:100%;">
+                    <input type="text" id="buscarTard" data-sugerencias="sugerenciasBuscarTard" placeholder="🔍 Buscar estudiante..." style="width:100%;" oninput="buscarTardanzas()">
                     <div id="sugerenciasBuscarTard" style="display:none;position:absolute;z-index:1000;background:white;border:1px solid #ccc;max-height:200px;overflow-y:auto;width:100%;box-shadow:0 2px 8px rgba(0,0,0,0.1);"></div>
                 </div>
-                <select id="filtrarCursoTard">
+                <select id="filtrarCursoTard" onchange="buscarTardanzas()">
                     <option value="">Todos los cursos</option>
                     ${CURSOS.map(c => `<option value="${c}">${c}</option>`).join('')}
                 </select>
-                <select id="filtrarMesTard">
+                <select id="filtrarMesTard" onchange="buscarTardanzas()">
                     <option value="">Todos los meses</option>
                     <option value="Enero">Enero</option>
                     <option value="Febrero">Febrero</option>
@@ -906,7 +906,7 @@ function crearModalTardanzas() {
     
     // Inicializar autocompletado de búsqueda
     setTimeout(() => {
-        crearAutocompletadoBusqueda('buscarTard', 'sugerenciasBuscarTard');
+        crearAutocompletadoBusqueda('buscarTard', 'sugerenciasBuscarTard', 'buscarTardanzas');
     }, 200);
 }
 
