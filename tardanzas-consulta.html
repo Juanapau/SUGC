@@ -343,25 +343,49 @@ if (CONFIG.urlTardanzas) {
 try {
 const datos = await cargarDatosDesdeGoogleSheets(CONFIG.urlTardanzas);
 if (datos && datos.length > 0) {
-// Calcular "Total Mes" para cada registro
-datos.forEach(tardanza => {
-const estudiante = tardanza['Nombre Estudiante'];
-const mes = tardanza['Mes'];
-const año = tardanza['Año'];
+// Guardar datos originales
+datosTardanzas = datos;
+console.log('📊 Tardanzas originales cargadas:', datos.length);
 
-// Contar tardanzas del mismo estudiante en el mismo mes/año
-const totalMes = datos.filter(t => 
-t['Nombre Estudiante'] === estudiante && 
-t['Mes'] === mes && 
-t['Año'] === año
-).length;
+// 🆕 AGRUPAR POR ESTUDIANTE-MES-AÑO DESDE EL INICIO
+const grupos = {};
+datos.forEach(t => {
+const estudiante = t['Nombre Estudiante'] || '';
+const mes = t['Mes'] || '';
+const año = t['Año'] || '';
+const clave = `${estudiante}|${mes}|${año}`;
 
-tardanza['Total Mes'] = totalMes;
+if (!grupos[clave]) {
+grupos[clave] = {
+estudiante: estudiante,
+curso: t['Curso'],
+mes: mes,
+año: año,
+tardanzas: [],
+totalMes: 0
+};
+}
+grupos[clave].tardanzas.push(t);
 });
 
-datosTardanzas = datos;
-tardanzasFiltradas = datos;
-console.log('✅ Tardanzas cargadas:', datos.length);
+// Crear array agrupado con solo una fila por estudiante-mes-año
+tardanzasFiltradas = [];
+Object.values(grupos).forEach(grupo => {
+grupo.totalMes = grupo.tardanzas.length;
+
+// Tomar la ÚLTIMA tardanza del mes como representante
+const ultimaTardanza = grupo.tardanzas.sort((a, b) => {
+const fechaA = new Date(a['Fecha']);
+const fechaB = new Date(b['Fecha']);
+return fechaB - fechaA;
+})[0];
+
+// Agregar el total calculado
+ultimaTardanza['Total Mes'] = grupo.totalMes;
+tardanzasFiltradas.push(ultimaTardanza);
+});
+
+console.log('✅ Tardanzas agrupadas:', tardanzasFiltradas.length, 'grupos');
 mostrarTardanzas();
 } else {
 tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:60px;"><div style="font-size:4em;margin-bottom:15px;opacity:0.5;">📭</div><p>No hay tardanzas registradas</p></td></tr>';
@@ -491,7 +515,40 @@ document.getElementById('buscarEstudiante').value = '';
 document.getElementById('filtrarCurso').value = '';
 document.getElementById('filtrarMes').value = '';
 document.querySelector('input[name="filtroTardanzas"][value="todas"]').checked = true;
-tardanzasFiltradas = datosTardanzas;
+
+// 🆕 AGRUPAR DATOS AL RECARGAR
+const grupos = {};
+datosTardanzas.forEach(t => {
+const estudiante = t['Nombre Estudiante'] || '';
+const mes = t['Mes'] || '';
+const año = t['Año'] || '';
+const clave = `${estudiante}|${mes}|${año}`;
+
+if (!grupos[clave]) {
+grupos[clave] = {
+estudiante: estudiante,
+curso: t['Curso'],
+mes: mes,
+año: año,
+tardanzas: [],
+totalMes: 0
+};
+}
+grupos[clave].tardanzas.push(t);
+});
+
+tardanzasFiltradas = [];
+Object.values(grupos).forEach(grupo => {
+grupo.totalMes = grupo.tardanzas.length;
+const ultimaTardanza = grupo.tardanzas.sort((a, b) => {
+const fechaA = new Date(a['Fecha']);
+const fechaB = new Date(b['Fecha']);
+return fechaB - fechaA;
+})[0];
+ultimaTardanza['Total Mes'] = grupo.totalMes;
+tardanzasFiltradas.push(ultimaTardanza);
+});
+
 mostrarTardanzas();
 }
 
