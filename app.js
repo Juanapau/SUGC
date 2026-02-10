@@ -334,14 +334,14 @@ function crearModalIncidencias() {
             <h3>Consultar Incidencias</h3>
             <div class="search-bar">
                 <div style="position:relative;flex:1;min-width:200px;">
-                    <input type="text" id="buscarInc" data-sugerencias="sugerenciasBuscarInc" placeholder="🔍 Buscar estudiante..." style="width:100%;">
+                    <input type="text" id="buscarInc" data-sugerencias="sugerenciasBuscarInc" placeholder="🔍 Buscar estudiante..." style="width:100%;" oninput="buscarIncidencias()">
                     <div id="sugerenciasBuscarInc" style="display:none;position:absolute;z-index:1000;background:white;border:1px solid #ccc;max-height:200px;overflow-y:auto;width:100%;box-shadow:0 2px 8px rgba(0,0,0,0.1);"></div>
                 </div>
-                <select id="filtrarCursoInc">
+                <select id="filtrarCursoInc" onchange="buscarIncidencias()">
                     <option value="">Todos los cursos</option>
                     ${CURSOS.map(c => `<option value="${c}">${c}</option>`).join('')}
                 </select>
-                <select id="filtrarTipo">
+                <select id="filtrarTipo" onchange="buscarIncidencias()">
                     <option value="">Todos los tipos</option>
                     <option value="Leve">Leve</option>
                     <option value="Grave">Grave</option>
@@ -432,7 +432,7 @@ function crearModalIncidencias() {
     
     // Inicializar autocompletado de búsqueda
     setTimeout(() => {
-        crearAutocompletadoBusqueda('buscarInc', 'sugerenciasBuscarInc');
+        crearAutocompletadoBusqueda('buscarInc', 'sugerenciasBuscarInc', 'buscarIncidencias');
     }, 200);
 }
 
@@ -1062,7 +1062,7 @@ function crearAutocompletadoBusqueda(inputId, sugerenciasId, callbackSeleccion) 
             const nombre = e['Nombre Completo'] || e.nombre || '';
             const curso = e['Curso'] || e.curso || '';
             const nombreEscapado = nombre.replace(/'/g, "\\'");
-            return `<div onclick="seleccionarEstudianteBusqueda('${inputId}', '${sugerenciasId}', '${nombreEscapado}', ${callbackSeleccion ? 'function(){' + callbackSeleccion + '(\'' + nombreEscapado + '\')}' : 'null'})" 
+            return `<div onclick="seleccionarEstudianteBusqueda('${inputId}', '${sugerenciasId}', '${nombreEscapado}', '${callbackSeleccion || ''}')" 
                          style="padding:10px;cursor:pointer;border-bottom:1px solid #eee;"
                          onmouseover="this.style.background='#f0f0f0'" 
                          onmouseout="this.style.background='white'">
@@ -1087,7 +1087,17 @@ function seleccionarEstudianteBusqueda(inputId, sugerenciasId, nombre, callback)
     
     if (input) input.value = nombre;
     if (sugerencias) sugerencias.style.display = 'none';
-    if (callback) callback(nombre);
+    
+    // 🆕 Si hay callback como string, ejecutarlo
+    if (callback && typeof callback === 'string') {
+        if (callback === 'buscarIncidencias') {
+            buscarIncidencias();
+        } else if (callback === 'buscarTardanzas') {
+            buscarTardanzas();
+        }
+    } else if (callback && typeof callback === 'function') {
+        callback(nombre);
+    }
 }
 
 // Cerrar sugerencias al hacer clic fuera
