@@ -709,7 +709,7 @@ function buscarIncidencias() {
             <td><span class="status-badge badge-${tipo.toLowerCase().replace(' ', '-')}">${tipo}</span></td>
             <td>${docente}</td>
             <td style="white-space:normal;max-width:150px;">${tipoConducta}</td>
-            <td style="white-space:normal;max-width:250px;">${descripcion.substring(0,80)}${descripcion.length > 80 ? '...' : ''}</td>
+            <td style="white-space:normal;max-width:250px;">${descripcion}</td>
             <td style="white-space:normal;max-width:200px;">${acciones || '-'}</td>
             <td style="white-space:normal;max-width:200px;">${seguimiento || '-'}</td>
         </tr>
