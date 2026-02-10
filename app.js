@@ -2161,6 +2161,21 @@ function importarContactos(event) {
 }
 
 function cargarTablaContactos() {
+    // 🆕 RESTAURAR EL HEADER ORIGINAL DE 7 COLUMNAS
+    const tabla = document.querySelector('#modalContactos table');
+    if (tabla) {
+        const thead = tabla.querySelector('thead tr');
+        thead.innerHTML = `
+            <th>Estudiante</th>
+            <th>Padre</th>
+            <th>Tel. Padre</th>
+            <th>Madre</th>
+            <th>Tel. Madre</th>
+            <th>Emergencia</th>
+            <th>Acción</th>
+        `;
+    }
+    
     const tbody = document.getElementById('bodyContactos');
     if (datosContactos.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#999;">No hay contactos</td></tr>';
@@ -2207,6 +2222,21 @@ function cargarTablaContactos() {
 }
 
 function buscarContactos() {
+    // 🆕 RESTAURAR EL HEADER ORIGINAL DE 7 COLUMNAS
+    const tabla = document.querySelector('#modalContactos table');
+    if (tabla) {
+        const thead = tabla.querySelector('thead tr');
+        thead.innerHTML = `
+            <th>Estudiante</th>
+            <th>Padre</th>
+            <th>Tel. Padre</th>
+            <th>Madre</th>
+            <th>Tel. Madre</th>
+            <th>Emergencia</th>
+            <th>Acción</th>
+        `;
+    }
+    
     const buscar = document.getElementById('buscarContacto').value.toLowerCase().trim();
     
     const filtrados = datosContactos.filter(c => {
@@ -2328,12 +2358,25 @@ function obtenerEstudiantesSinContactos() {
 }
 
 function mostrarEstudiantesSinContactos(estudiantes) {
+    const tabla = document.querySelector('#modalContactos table');
+    
+    if (!tabla) return;
+    
+    // 🆕 CAMBIAR EL HEADER A 3 COLUMNAS
+    const thead = tabla.querySelector('thead tr');
+    thead.innerHTML = `
+        <th>Estudiante</th>
+        <th>Curso</th>
+        <th>Contacto</th>
+        <th>Acción</th>
+    `;
+    
     const tbody = document.getElementById('bodyContactos');
     
     if (estudiantes.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="7" style="text-align:center;padding:40px;color:#059669;">
+                <td colspan="4" style="text-align:center;padding:40px;color:#059669;">
                     <div style="font-size:3em;margin-bottom:15px;">✅</div>
                     <strong style="font-size:1.2em;">¡Excelente!</strong>
                     <p style="margin-top:10px;color:#666;">Todos los estudiantes tienen contactos registrados</p>
@@ -2350,7 +2393,8 @@ function mostrarEstudiantesSinContactos(estudiantes) {
         return `
         <tr style="background:#fef2f2;">
             <td><strong style="color:#991b1b;">${nombre}</strong></td>
-            <td colspan="5" style="color:#7f1d1d;font-style:italic;">Sin contactos registrados</td>
+            <td>${curso}</td>
+            <td style="color:#7f1d1d;font-style:italic;">Sin contacto registrado</td>
             <td>
                 <button class="btn btn-sm" onclick="agregarContactoRapido('${nombre.replace(/'/g, "\\'")}', '${curso}')" 
                         style="background:#059669;color:white;padding:5px 12px;font-size:0.85em;">
