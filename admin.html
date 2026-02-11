@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -49,8 +50,7 @@
 
         /* 🆕 LOGO DE FONDO EN MODO OSCURO */
         body.dark-mode::before {
-            opacity: 0.08;
-            filter: brightness(0.8);
+            opacity: 0.05;
         }
 
         body.dark-mode header {
@@ -160,7 +160,6 @@
             min-height: 100vh;
             padding: 20px;
             position: relative;
-            overflow-x: hidden;
         }
 
         /* 🆕 LOGO DE FONDO COMO MARCA DE AGUA */
@@ -170,30 +169,21 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 900px;
-            height: 900px;
+            width: 800px;
+            height: 800px;
             background-image: url('./logo.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            opacity: 0.15;
+            opacity: 0.08;
             z-index: 0;
             pointer-events: none;
-            filter: brightness(1.2);
         }
 
         /* Asegurar que el contenido esté por encima del logo */
         .container {
             position: relative;
             z-index: 1;
-        }
-
-        header,
-        .dashboard,
-        .module-card,
-        #modalContainer {
-            position: relative;
-            z-index: 2;
         }
 
         .container {
