@@ -576,14 +576,14 @@ async function limpiarNotifLeidas() {
 // FUNCIONES DE CREACIÓN
 // ========================================
 
-async function notificarNuevaIncidencia(estudiante, tipoFalta, tipoConducta, docente) {
+async function notificarNuevaIncidencia(estudiante, tipoFalta, tipoConducta, Docente) {
     if (!sistemaNotificacionesSheets) return;
     
     // 🆕 TODAS las incidencias son importantes (badge amarillo)
     const prioridad = 'importante';
     
     // 🆕 Incluir el nombre del docente en el mensaje
-    const docenteTexto = docente ? ` reportada por <strong>${docente}</strong>` : '';
+    const docenteTexto = Docente ? ` reportada por <strong>${Docente}</strong>` : '';
     
     await sistemaNotificacionesSheets.crearNotificacion(
         'incidencia',
