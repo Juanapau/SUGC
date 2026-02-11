@@ -579,7 +579,8 @@ async function limpiarNotifLeidas() {
 async function notificarNuevaIncidencia(estudiante, tipoFalta, tipoConducta, docente) {
     if (!sistemaNotificacionesSheets) return;
     
-    const prioridad = (tipoFalta === 'Grave' || tipoFalta === 'Muy Grave') ? 'importante' : 'info';
+    // 🆕 TODAS las incidencias son importantes (badge amarillo)
+    const prioridad = 'importante';
     
     // 🆕 Incluir el nombre del docente en el mensaje
     const docenteTexto = docente ? ` reportada por <strong>${docente}</strong>` : '';
