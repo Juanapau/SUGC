@@ -379,8 +379,8 @@ width: 100%;
 <div class="header-left">
 <img src="./logo.png" alt="Logo">
 <div class="header-title">
-<h1>📞 Contactos de Padres</h1>
-<p>Vista de solo lectura</p>
+<h1>Contactos de Padres</h1>
+<p>Solo Lectura - PNSA</p>
 </div>
 </div>
 <a href="consulta.html" class="btn-back">⬅️ Volver</a>
@@ -388,25 +388,13 @@ width: 100%;
 
 <!-- CONTENIDO -->
 <div class="content-card">
-<div class="page-header">
-<h2>📞 Información de Contacto</h2>
-</div>
-
-<!-- ALERTA DE SOLO LECTURA -->
-<div class="alert-readonly">
-<span class="icon">🔒</span>
-<p><strong>Modo de solo lectura activado.</strong> Solo puedes ver la información de contactos.</p>
-</div>
 
 <!-- BARRA DE BÚSQUEDA -->
 <div class="search-bar">
-<div class="autocomplete-container">
+<div class="autocomplete-container" style="flex: 3;">
 <input type="text" id="buscarContacto" placeholder="🔍 Buscar estudiante o padre..." autocomplete="off">
 <div id="sugerenciasContacto" class="autocomplete-suggestions"></div>
 </div>
-<button class="btn btn-warning" id="btnSinContactos" onclick="toggleSinContactos()">
-🚨 Sin Contactos
-</button>
 <button class="btn btn-secondary" onclick="recargarContactos()">
 🔄 Recargar
 </button>
@@ -433,12 +421,11 @@ width: 100%;
 <th>Madre</th>
 <th>Tel. Madre</th>
 <th>Tel. Emergencia</th>
-<th>Acción</th>
 </tr>
 </thead>
 <tbody id="bodyContactos">
 <tr>
-<td colspan="8" style="text-align:center;padding:40px;color:#666;">
+<td colspan="7" style="text-align:center;padding:40px;color:#666;">
 📥 Cargando contactos...
 </td>
 </tr>
@@ -534,7 +521,7 @@ inicializarAutocompletado();
 
 } catch (error) {
 console.error('❌ Error:', error);
-tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#dc3545;">⚠️ Error al cargar datos</td></tr>';
+tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#dc3545;">⚠️ Error al cargar datos</td></tr>';
 }
 }
 
@@ -571,7 +558,7 @@ function mostrarContactos(contactos) {
 const tbody = document.getElementById('bodyContactos');
 
 if (contactos.length === 0) {
-tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#999;">No hay contactos registrados</td></tr>';
+tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#999;">No hay contactos registrados</td></tr>';
 return;
 }
 
@@ -597,19 +584,6 @@ return nombre.toLowerCase().trim() === estudiante.toLowerCase().trim();
 });
 const curso = estData ? (estData.Curso || estData.curso || '-') : '-';
 
-// Botones de WhatsApp
-const hayNumero = (telPadre !== '-' && telPadre) || (telMadre !== '-' && telMadre) || (telEmergencia !== '-' && telEmergencia);
-
-let botonesWhatsApp = '<td style="text-align:center;">';
-if (hayNumero) {
-botonesWhatsApp += `<button class="btn whatsapp-btn" onclick="abrirWhatsAppContacto('${estudiante.replace(/'/g, "\\'")}', '${telPadre}', '${telMadre}', '${telEmergencia}')">
-💬 WhatsApp
-</button>`;
-} else {
-botonesWhatsApp += '<span class="no-contact">Sin números</span>';
-}
-botonesWhatsApp += '</td>';
-
 return `
 <tr>
 <td><strong>${estudiante}</strong></td>
@@ -619,7 +593,6 @@ return `
 <td>${nombreMadre}</td>
 <td>${telMadre}</td>
 <td>${telEmergencia}</td>
-${botonesWhatsApp}
 </tr>
 `;
 }).join('');
@@ -638,11 +611,11 @@ const thead = tabla.querySelector('thead tr');
 thead.innerHTML = `
 <th>Estudiante</th>
 <th>Curso</th>
-<th colspan="6" style="text-align:center;">Sin información de contacto registrada</th>
+<th colspan="5" style="text-align:center;">Sin información de contacto registrada</th>
 `;
 
 if (estudiantesSinContactos.length === 0) {
-tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#059669;">✅ Todos los estudiantes tienen contactos registrados</td></tr>';
+tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#059669;">✅ Todos los estudiantes tienen contactos registrados</td></tr>';
 return;
 }
 
@@ -664,7 +637,7 @@ return `
 <tr>
 <td><strong>${nombre}</strong></td>
 <td>${curso}</td>
-<td colspan="6" style="text-align:center;color:#dc2626;font-style:italic;">⚠️ Sin contactos registrados</td>
+<td colspan="5" style="text-align:center;color:#dc2626;font-style:italic;">⚠️ Sin contactos registrados</td>
 </tr>
 `;
 }).join('');
@@ -704,7 +677,6 @@ thead.innerHTML = `
 <th>Madre</th>
 <th>Tel. Madre</th>
 <th>Tel. Emergencia</th>
-<th>Acción</th>
 `;
 mostrarContactos(datosContactos);
 }
@@ -783,7 +755,7 @@ return estudiante.includes(buscar) || nombrePadre.includes(buscar) || nombreMadr
 if (resultados.length === 0) {
 sugerencias.classList.remove('active');
 const tbody = document.getElementById('bodyContactos');
-tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#999;">No se encontraron resultados</td></tr>';
+tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#999;">No se encontraron resultados</td></tr>';
 return;
 }
 
@@ -884,15 +856,11 @@ sugerencias.classList.remove('active');
 
 async function recargarContactos() {
 const tbody = document.getElementById('bodyContactos');
-tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#666;">🔄 Recargando...</td></tr>';
+tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#666;">🔄 Recargando...</td></tr>';
 
 // Limpiar búsqueda
 document.getElementById('buscarContacto').value = '';
 mostrandoSinContactos = false;
-const btn = document.getElementById('btnSinContactos');
-btn.style.background = 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)';
-btn.innerHTML = '🚨 Sin Contactos';
-document.getElementById('alertaSinContactos').classList.remove('active');
 
 // Restaurar header
 const tabla = document.querySelector('table');
@@ -905,7 +873,6 @@ thead.innerHTML = `
 <th>Madre</th>
 <th>Tel. Madre</th>
 <th>Tel. Emergencia</th>
-<th>Acción</th>
 `;
 
 await cargarDatos();
