@@ -309,6 +309,75 @@ margin-bottom: 15px;
 opacity: 0.5;
 }
 
+/* ESTILOS DEL MODAL */
+.modal {
+display: none;
+position: fixed;
+z-index: 9999;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0,0,0,0.7);
+overflow-y: auto;
+}
+
+.modal-content {
+background: white;
+margin: 20px auto;
+padding: 0;
+border-radius: 15px;
+max-width: 1200px;
+box-shadow: 0 12px 48px rgba(0,0,0,0.4);
+animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+from {
+transform: translateY(-50px);
+opacity: 0;
+}
+to {
+transform: translateY(0);
+opacity: 1;
+}
+}
+
+.modal-header {
+background: linear-gradient(135deg, #059669 0%, #047857 100%);
+color: white;
+padding: 25px 30px;
+border-radius: 15px 15px 0 0;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.modal-header h2 {
+font-size: 1.8em;
+margin: 0;
+}
+
+.close {
+color: white;
+font-size: 35px;
+font-weight: bold;
+cursor: pointer;
+transition: all 0.3s;
+line-height: 1;
+}
+
+.close:hover {
+color: #4a9eff;
+transform: rotate(90deg);
+}
+
+.modal-body {
+padding: 30px;
+max-height: 70vh;
+overflow-y: auto;
+}
+
 @media (max-width: 768px) {
 header {
 flex-direction: column;
@@ -370,7 +439,16 @@ vertical-align: top;
 
 <!-- BARRA DE BÚSQUEDA Y FILTROS -->
 <div class="search-bar">
-<input type="text" id="buscarEstudiante" placeholder="🔍 Buscar por nombre de estudiante..." onkeyup="buscarIncidencias()">
+<div style="position: relative; flex: 1; min-width: 200px;">
+<input type="text" 
+id="buscarEstudiante" 
+placeholder="🔍 Buscar por nombre de estudiante..."
+autocomplete="off"
+oninput="filtrarSugerencias(); buscarIncidencias();"
+onfocus="mostrarSugerencias()"
+style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 0.95em;">
+<div id="sugerenciasEstudiantes" style="display:none; position:absolute; z-index:1000; background:white; border:1px solid #ccc; max-height:200px; overflow-y:auto; width:100%; box-shadow:0 2px 8px rgba(0,0,0,0.1); border-radius: 0 0 8px 8px; margin-top: -2px;"></div>
+</div>
 <select id="filtrarCurso" class="filter-select" onchange="buscarIncidencias()">
 <option value="">Todos los cursos</option>
 <option value="1roA">1roA</option>
@@ -615,6 +693,84 @@ return `${dia}/${mes}/${año} ${hora}:${minutos}`;
 return fechaStr;
 }
 }
+
+// ==========================================
+// AUTOCOMPLETADO DINÁMICO
+// ==========================================
+
+function filtrarSugerencias() {
+const input = document.getElementById('buscarEstudiante');
+const sugerencias = document.getElementById('sugerenciasEstudiantes');
+const texto = input.value.toLowerCase().trim();
+
+if (texto.length === 0) {
+sugerencias.style.display = 'none';
+return;
+}
+
+// Obtener estudiantes únicos de las incidencias
+const estudiantesUnicos = [...new Set(datosIncidencias
+.map(inc => inc['Nombre Estudiante'])
+.filter(nombre => nombre && nombre.toLowerCase().includes(texto))
+)].sort();
+
+if (estudiantesUnicos.length === 0) {
+sugerencias.style.display = 'none';
+return;
+}
+
+// Mostrar sugerencias
+sugerencias.innerHTML = estudiantesUnicos.map(nombre => `
+<div onclick="seleccionarEstudiante('${nombre.replace(/'/g, "\\'")}')" 
+style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; transition: background 0.2s;"
+onmouseover="this.style.background='#f0f0f0'"
+onmouseout="this.style.background='white'">
+${nombre}
+</div>
+`).join('');
+
+sugerencias.style.display = 'block';
+}
+
+function mostrarSugerencias() {
+const input = document.getElementById('buscarEstudiante');
+if (input.value.trim().length > 0) {
+filtrarSugerencias();
+}
+}
+
+function seleccionarEstudiante(nombre) {
+document.getElementById('buscarEstudiante').value = nombre;
+document.getElementById('sugerenciasEstudiantes').style.display = 'none';
+buscarIncidencias();
+}
+
+// Cerrar sugerencias al hacer clic fuera
+document.addEventListener('click', function(e) {
+const sugerencias = document.getElementById('sugerenciasEstudiantes');
+const input = document.getElementById('buscarEstudiante');
+if (e.target !== input && e.target !== sugerencias) {
+sugerencias.style.display = 'none';
+}
+});
+
+// ==========================================
+// SOBRESCRIBIR FUNCIÓN DE APP.JS PARA LIMPIAR MODALES ANTERIORES
+// ==========================================
+
+// Guardar la función original
+const abrirHistorialEstudianteOriginal = window.abrirHistorialEstudiante;
+
+// Sobrescribir para cerrar modales anteriores
+window.abrirHistorialEstudiante = function(nombreEstudiante) {
+// Cerrar cualquier modal anterior
+const modalAnterior = document.getElementById('modalHistorialEstudiante');
+if (modalAnterior) {
+modalAnterior.remove();
+}
+// Llamar a la función original
+abrirHistorialEstudianteOriginal(nombreEstudiante);
+};
 
 // ==========================================
 // RE-HABILITAR FILTROS (después de auth-guard)
