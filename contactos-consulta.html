@@ -90,22 +90,26 @@ font-size: 0.85em;
 }
 
 .btn-back {
-background: linear-gradient(135deg, #000000 0%, #333333 100%);
+background: #000000;
 color: white;
 border: none;
-padding: 10px 20px;
-border-radius: 8px;
+padding: 15px 30px;
+border-radius: 12px;
 cursor: pointer;
-font-size: 0.9em;
+font-size: 1em;
 font-weight: 600;
 transition: all 0.3s;
 text-decoration: none;
-display: inline-block;
+display: inline-flex;
+align-items: center;
+gap: 10px;
+box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
 .btn-back:hover {
 transform: translateY(-2px);
-box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+background: #1a1a1a;
 }
 
 .content-card {
@@ -383,7 +387,7 @@ width: 100%;
 <p>Solo Lectura - PNSA</p>
 </div>
 </div>
-<a href="consulta.html" class="btn-back">⬅️ Volver</a>
+<a href="consulta.html" class="btn-back">← Volver al Dashboard</a>
 </header>
 
 <!-- CONTENIDO -->
@@ -391,7 +395,7 @@ width: 100%;
 
 <!-- BARRA DE BÚSQUEDA -->
 <div class="search-bar">
-<div class="autocomplete-container" style="flex: 3;">
+<div class="autocomplete-container" style="flex: 4;">
 <input type="text" id="buscarContacto" placeholder="🔍 Buscar estudiante o padre..." autocomplete="off">
 <div id="sugerenciasContacto" class="autocomplete-suggestions"></div>
 </div>
