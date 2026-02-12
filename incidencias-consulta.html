@@ -939,25 +939,26 @@ let detalles = '';
 if (evento.tipo === 'incidencia') {
 iconoTipo = '📋';
 colorBorde = evento.gravedad === 'Grave' || evento.gravedad === 'Muy Grave' ? '#dc2626' : '#f59e0b';
-labelTipo = `<div style="display:inline-block;padding:5px 12px;background:${colorBorde};color:white;border-radius:20px;font-size:0.85em;font-weight:600;margin-bottom:10px;">${iconoTipo} ${evento.titulo}</div>`;
+labelTipo = `<span style="background:#fee2e2;color:#991b1b;padding:4px 10px;border-radius:4px;font-size:0.85em;font-weight:600;">📋 Incidencia</span>`;
 detalles = `
-<p style="margin-bottom:8px;"><strong>Descripción:</strong> ${evento.descripcion}</p>
-<p style="margin-bottom:8px;"><strong>Gravedad:</strong> ${evento.gravedad}</p>
-<p><strong>Reportado por:</strong> ${evento.docente}</p>
+<strong>${evento.titulo}</strong><br>
+${evento.descripcion}<br>
+<span style="color:#666;font-size:0.9em;">Tipo de Falta: ${evento.gravedad} | Docente: ${evento.docente}</span>
 `;
 } else if (evento.tipo === 'tardanza') {
 iconoTipo = '⏰';
+colorBorde = '#f59e0b';
+labelTipo = `<span style="background:#fef3c7;color:#92400e;padding:4px 10px;border-radius:4px;font-size:0.85em;font-weight:600;">⏰ Tardanza</span>`;
+detalles = `<strong>${evento.titulo}</strong><br>${evento.descripcion}${evento.motivo ? '<br><span style="color:#666;font-size:0.9em;">Motivo: ' + evento.motivo + '</span>' : ''}`;
+} else {
+iconoTipo = '🤝';
 colorBorde = '#3b82f6';
-labelTipo = `<div style="display:inline-block;padding:5px 12px;background:#3b82f6;color:white;border-radius:20px;font-size:0.85em;font-weight:600;margin-bottom:10px;">${iconoTipo} ${evento.titulo}</div>`;
-detalles = evento.motivo ? `<p><strong>Motivo:</strong> ${evento.motivo}</p>` : '<p>Sin motivo especificado</p>';
-} else if (evento.tipo === 'reunion') {
-iconoTipo = '👥';
-colorBorde = '#8b5cf6';
-labelTipo = `<div style="display:inline-block;padding:5px 12px;background:#8b5cf6;color:white;border-radius:20px;font-size:0.85em;font-weight:600;margin-bottom:10px;">${iconoTipo} ${evento.titulo}</div>`;
+labelTipo = `<span style="background:#dbeafe;color:#1e40af;padding:4px 10px;border-radius:4px;font-size:0.85em;font-weight:600;">🤝 Reunión</span>`;
 detalles = `
-<p style="margin-bottom:8px;"><strong>Motivo:</strong> ${evento.descripcion || 'No especificado'}</p>
-${evento.asistio ? `<p style="margin-bottom:8px;"><strong>Asistió:</strong> ${evento.asistio}</p>` : ''}
-${evento.acuerdos ? `<p><strong>Acuerdos:</strong> ${evento.acuerdos}</p>` : ''}
+<strong>${evento.titulo}</strong><br>
+${evento.descripcion}<br>
+<span style="color:#666;font-size:0.9em;">Asistió: ${evento.asistio === 'Sí' ? '✅ Sí' : '❌ No'}</span>
+${evento.acuerdos ? '<br><span style="color:#666;font-size:0.9em;">Acuerdos: ' + evento.acuerdos + '</span>' : ''}
 `;
 }
 
@@ -969,8 +970,6 @@ ${labelTipo}
 </div>
 `;
 });
-
-// MENSAJE INFORMATIVO REMOVIDO - Ya no muestra "Mostrando X de Y eventos"
 }
 
 // Crear modal - SIN BOTÓN DE EXPORTAR PDF
@@ -1033,7 +1032,7 @@ ${htmlContactos}
 
 <!-- LÍNEA DE TIEMPO -->
 <h3 style="color:#333;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid #e0e0e0;display:flex;align-items:center;gap:10px;">
-📅 Línea de Tiempo (Todos los eventos)
+📅 Línea de Tiempo (Últimos eventos)
 </h3>
 <div style="position:relative;padding-left:40px;">
 <div style="position:absolute;left:15px;top:0;bottom:0;width:2px;background:#e0e0e0;"></div>
