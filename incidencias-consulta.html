@@ -309,80 +309,6 @@ margin-bottom: 15px;
 opacity: 0.5;
 }
 
-/* MODAL STYLES */
-.modal {
-display: none;
-position: fixed;
-z-index: 9999;
-left: 0;
-top: 0;
-width: 100%;
-height: 100%;
-overflow: auto;
-background-color: rgba(0, 0, 0, 0.7);
-animation: fadeIn 0.3s;
-}
-
-@keyframes fadeIn {
-from { opacity: 0; }
-to { opacity: 1; }
-}
-
-.modal-content {
-background-color: #fefefe;
-margin: 2% auto;
-padding: 0;
-border-radius: 15px;
-box-shadow: 0 10px 50px rgba(0,0,0,0.3);
-max-width: 1000px;
-animation: slideIn 0.3s;
-}
-
-@keyframes slideIn {
-from {
-transform: translateY(-50px);
-opacity: 0;
-}
-to {
-transform: translateY(0);
-opacity: 1;
-}
-}
-
-.modal-header {
-padding: 25px;
-background: linear-gradient(135deg, #059669 0%, #047857 100%);
-color: white;
-border-radius: 15px 15px 0 0;
-display: flex;
-justify-content: space-between;
-align-items: center;
-}
-
-.modal-header h2 {
-margin: 0;
-font-size: 1.8em;
-}
-
-.close {
-color: white;
-font-size: 35px;
-font-weight: bold;
-cursor: pointer;
-transition: all 0.2s;
-line-height: 1;
-}
-
-.close:hover {
-transform: scale(1.2);
-}
-
-.modal-body {
-padding: 25px;
-max-height: calc(90vh - 180px);
-overflow-y: auto;
-}
-
 @media (max-width: 768px) {
 header {
 flex-direction: column;
@@ -414,11 +340,6 @@ table th,
 table td {
 padding: 8px 6px;
 vertical-align: top;
-}
-
-.modal-content {
-margin: 5% 10px;
-max-width: calc(100% - 20px);
 }
 }
 </style>
@@ -506,57 +427,32 @@ max-width: calc(100% - 20px);
 </div>
 </div>
 
-<!-- CONTENEDOR PARA MODALES -->
+<!-- CONTENEDOR PARA MODALES (usado por app.js) -->
 <div id="modalContainer"></div>
 
 <script src="./auth-guard.js"></script>
+<script src="./app.js"></script>
 <script>
-// ==========================================
-// CONFIGURACIÓN Y DATOS GLOBALES
-// ==========================================
-
-// Datos de incidencias, tardanzas, reuniones, contactos y estudiantes
-let datosIncidencias = [];
-let datosTardanzas = [];
-let datosContactos = [];
-let datosEstudiantes = [];
-let datosReuniones = [];
+// Datos de incidencias locales
 let incidenciasFiltradas = [];
 
-// Configuración (cargada desde localStorage)
-let CONFIG = {
-urlIncidencias: 'https://script.google.com/macros/s/AKfycbwnCHIHNum-8uCHLbuE5NvwJeVmVMF6hCLWOAQQRUOwsU5GK_vpkrxifDFlMat1tP-z/exec',
-urlTardanzas: 'https://script.google.com/macros/s/AKfycbxI2JCRc-f0MdokDyepK_UOPf_gAbjYpCWzqe6ShqhRIP7uurohjBdswChKHaExsT2Riw/exec',
-urlContactos: 'https://script.google.com/macros/s/AKfycbxcnvwmyorCWze_CkDPEUtdHPpD0qPbGCtse4Ku16yxwhVo-8AjnXpKTudVi-0dVwOK/exec',
-urlEstudiantes: 'https://script.google.com/macros/s/AKfycby-ceKgHZzTxQzcVcNiOWaN5aNDoqtIlihVcOZAp0_5hIVcv115GKHtfdjFPq43ttCEuA/exec',
-urlReuniones: 'https://script.google.com/macros/s/AKfycbxjky9LnAAqElohVjgLESUA2nh-ICXYWNDMGkVfGjwVEb1tc0HQAtg-sayrFMXH788aLA/exec'
-};
-
-// ==========================================
-// CARGAR CONFIGURACIÓN Y DATOS AL INICIAR
-// ==========================================
-
+// Cargar configuración
 window.addEventListener('load', function() {
 const configGuardada = localStorage.getItem('censaConfig');
 if (configGuardada) {
 const configTemp = JSON.parse(configGuardada);
-// Actualizar URLs si están disponibles
-if (configTemp.urlIncidencias) CONFIG.urlIncidencias = configTemp.urlIncidencias;
-if (configTemp.urlTardanzas) CONFIG.urlTardanzas = configTemp.urlTardanzas;
-if (configTemp.urlContactos) CONFIG.urlContactos = configTemp.urlContactos;
-if (configTemp.urlEstudiantes) CONFIG.urlEstudiantes = configTemp.urlEstudiantes;
-if (configTemp.urlReuniones) CONFIG.urlReuniones = configTemp.urlReuniones;
+// Solo sobrescribir si tiene valor
+if (configTemp.urlIncidencias) {
+CONFIG.urlIncidencias = configTemp.urlIncidencias;
+}
 console.log('✅ Configuración actualizada desde localStorage');
 }
+console.log('📋 URL Incidencias:', CONFIG.urlIncidencias);
 
-// Cargar todos los datos necesarios
-cargarTodosLosDatos();
+cargarIncidencias();
 });
 
-// ==========================================
-// FUNCIONES DE CARGA DE DATOS
-// ==========================================
-
+// Cargar datos desde Google Sheets
 async function cargarDatosDesdeGoogleSheets(url) {
 console.log('🔗 Intentando cargar desde:', url);
 
@@ -573,42 +469,39 @@ console.log('✅ Datos recibidos:', data.length, 'registros');
 return data;
 } catch (error) {
 console.error('❌ Error detallado:', error);
+console.error('❌ Tipo de error:', error.name);
+console.error('❌ Mensaje:', error.message);
 return [];
 }
 }
 
-async function cargarTodosLosDatos() {
+// Cargar incidencias
+async function cargarIncidencias() {
 const tbody = document.getElementById('bodyIncidencias');
-tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#666;">📥 Cargando datos desde Google Sheets...</td></tr>';
+console.log('📋 Iniciando carga de incidencias...');
+console.log('🔗 URL configurada:', CONFIG.urlIncidencias);
+
+if (!CONFIG.urlIncidencias || CONFIG.urlIncidencias === '') {
+console.error('❌ No hay URL configurada');
+tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#dc3545;">⚠️ No hay URL de Google Sheets configurada. Contacta al administrador.</td></tr>';
+return;
+}
+
+tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#666;">📥 Cargando incidencias desde Google Sheets...</td></tr>';
 
 try {
-// Cargar todos los datos en paralelo
-const [incidencias, tardanzas, contactos, estudiantes, reuniones] = await Promise.all([
-cargarDatosDesdeGoogleSheets(CONFIG.urlIncidencias),
-cargarDatosDesdeGoogleSheets(CONFIG.urlTardanzas),
-cargarDatosDesdeGoogleSheets(CONFIG.urlContactos),
-cargarDatosDesdeGoogleSheets(CONFIG.urlEstudiantes),
-cargarDatosDesdeGoogleSheets(CONFIG.urlReuniones)
-]);
+const datos = await cargarDatosDesdeGoogleSheets(CONFIG.urlIncidencias);
+console.log('📊 Datos recibidos:', datos);
 
-// Asignar a variables globales
-datosIncidencias = incidencias || [];
-datosTardanzas = tardanzas || [];
-datosContactos = contactos || [];
-datosEstudiantes = estudiantes || [];
-datosReuniones = reuniones || [];
-incidenciasFiltradas = datosIncidencias;
-
-console.log('📊 Datos cargados:');
-console.log(`  - Incidencias: ${datosIncidencias.length}`);
-console.log(`  - Tardanzas: ${datosTardanzas.length}`);
-console.log(`  - Contactos: ${datosContactos.length}`);
-console.log(`  - Estudiantes: ${datosEstudiantes.length}`);
-console.log(`  - Reuniones: ${datosReuniones.length}`);
-
-if (datosIncidencias.length > 0) {
+if (datos && datos.length > 0) {
+datosIncidencias = datos;
+incidenciasFiltradas = datos;
+console.log('✅ Incidencias cargadas:', datos.length);
+console.log('🔍 ESTRUCTURA DEL PRIMER REGISTRO:', datos[0]);
+console.log('🔍 PROPIEDADES DISPONIBLES:', Object.keys(datos[0]));
 mostrarIncidencias();
 } else {
+console.log('⚠️ No hay datos o la respuesta está vacía');
 mostrarSinDatos();
 }
 } catch (error) {
@@ -619,16 +512,16 @@ tbody.innerHTML = `
 <div style="font-size:2em;margin-bottom:10px;">⚠️</div>
 <p style="font-weight:600;margin-bottom:10px;">Error al cargar datos</p>
 <p style="font-size:0.9em;margin-bottom:15px;">${error.message}</p>
+<p style="font-size:0.85em;color:#666;">
+Abre la consola del navegador (F12) para ver detalles técnicos.
+</p>
 </td>
 </tr>
 `;
 }
 }
 
-// ==========================================
-// MOSTRAR INCIDENCIAS EN LA TABLA
-// ==========================================
-
+// Mostrar incidencias en la tabla
 function mostrarIncidencias() {
 const tbody = document.getElementById('bodyIncidencias');
 
@@ -660,10 +553,23 @@ return `
 console.log(`📊 Mostrando ${incidenciasFiltradas.length} incidencias`);
 }
 
-// ==========================================
-// FUNCIONES DE BÚSQUEDA Y FILTRADO
-// ==========================================
+// Mostrar mensaje cuando no hay datos
+function mostrarSinDatos() {
+const tbody = document.getElementById('bodyIncidencias');
+tbody.innerHTML = `
+<tr>
+<td colspan="9">
+<div class="no-data">
+<div class="no-data-icon">📭</div>
+<p style="font-size:1.2em;font-weight:600;margin-bottom:5px;">No hay incidencias registradas</p>
+<p style="font-size:0.9em;">O no se encontraron resultados con los filtros aplicados.</p>
+</div>
+</td>
+</tr>
+`;
+}
 
+// Buscar incidencias con filtros
 function buscarIncidencias() {
 const buscarEstudiante = document.getElementById('buscarEstudiante').value.toLowerCase();
 const filtrarCurso = document.getElementById('filtrarCurso').value;
@@ -681,30 +587,18 @@ mostrarIncidencias();
 console.log(`🔍 Filtrado: ${incidenciasFiltradas.length} de ${datosIncidencias.length} incidencias`);
 }
 
+// Recargar incidencias
 function recargarIncidencias() {
 document.getElementById('buscarEstudiante').value = '';
 document.getElementById('filtrarCurso').value = '';
 document.getElementById('filtrarTipo').value = '';
 
-cargarTodosLosDatos();
-console.log('🔄 Recargando todos los datos...');
+incidenciasFiltradas = datosIncidencias;
+mostrarIncidencias();
+console.log('🔄 Filtros limpiados');
 }
 
-function mostrarSinDatos() {
-const tbody = document.getElementById('bodyIncidencias');
-tbody.innerHTML = `
-<tr>
-<td colspan="9">
-<div class="no-data">
-<div class="no-data-icon">📭</div>
-<p style="font-size:1.2em;font-weight:600;margin-bottom:5px;">No hay incidencias registradas</p>
-<p style="font-size:0.9em;">O no se encontraron resultados con los filtros aplicados.</p>
-</div>
-</td>
-</tr>
-`;
-}
-
+// Formatear fecha
 function formatearFecha(fechaStr) {
 if (!fechaStr) return 'N/A';
 
@@ -723,309 +617,10 @@ return fechaStr;
 }
 
 // ==========================================
-// FUNCIÓN PARA ABRIR HISTORIAL DEL ESTUDIANTE
-// ==========================================
-
-function abrirHistorialEstudiante(nombreEstudiante) {
-// Buscar información del estudiante
-const estudiante = datosEstudiantes.find(e => {
-const nombre = e['Nombre Completo'] || e.nombre || '';
-return nombre.toLowerCase() === nombreEstudiante.toLowerCase();
-});
-
-if (!estudiante) {
-alert('⚠️ No se encontró información del estudiante en la base de datos.');
-return;
-}
-
-const nombre = estudiante['Nombre Completo'] || estudiante.nombre || '';
-const curso = estudiante['Curso'] || estudiante.curso || '';
-
-// Recopilar toda la información del estudiante
-const incidencias = datosIncidencias.filter(i => {
-const nom = i['Nombre Estudiante'] || i.estudiante || '';
-return nom.toLowerCase() === nombreEstudiante.toLowerCase();
-});
-
-const tardanzas = datosTardanzas.filter(t => {
-const nom = t['Nombre Estudiante'] || t.estudiante || '';
-return nom.toLowerCase() === nombreEstudiante.toLowerCase();
-});
-
-const reuniones = datosReuniones.filter(r => {
-const nom = r['Nombre Estudiante'] || r.estudiante || '';
-return nom.toLowerCase() === nombreEstudiante.toLowerCase();
-});
-
-const contacto = datosContactos.find(c => {
-const nom = c['Nombre Estudiante'] || c['Mombre Estudiante'] || c.estudiante || '';
-return nom.toLowerCase() === nombreEstudiante.toLowerCase();
-});
-
-// Contar incidencias por tipo
-const incidenciasLeves = incidencias.filter(i => {
-const tipo = i['Tipo'] || i['Tipo de falta'] || i['Tipo de Falta'] || i.tipoFalta || i.tipo || '';
-return tipo === 'Leve';
-}).length;
-
-const incidenciasGraves = incidencias.filter(i => {
-const tipo = i['Tipo'] || i['Tipo de falta'] || i['Tipo de Falta'] || i.tipoFalta || i.tipo || '';
-return tipo === 'Grave';
-}).length;
-
-const incidenciasMuyGraves = incidencias.filter(i => {
-const tipo = i['Tipo'] || i['Tipo de falta'] || i['Tipo de Falta'] || i.tipoFalta || i.tipo || '';
-return tipo === 'Muy Grave';
-}).length;
-
-// Total de tardanzas
-const tardanzasTotales = tardanzas.length;
-
-// Determinar estado basado en tardanzas y faltas graves/muy graves
-const faltasGravesYMuyGraves = incidenciasGraves + incidenciasMuyGraves;
-let estadoColor = '#059669';
-let estadoTexto = 'Normal';
-let estadoIcono = '✅';
-
-if (faltasGravesYMuyGraves >= 3 || tardanzasTotales >= 10) {
-estadoColor = '#dc2626';
-estadoTexto = 'Requiere Atención Urgente';
-estadoIcono = '🚨';
-} else if (faltasGravesYMuyGraves >= 1 || tardanzasTotales >= 5) {
-estadoColor = '#f59e0b';
-estadoTexto = 'Requiere Atención';
-estadoIcono = '⚠️';
-}
-
-// Generar HTML de contactos
-let htmlContactos = '';
-if (contacto) {
-const nombrePadre = contacto['Nombre Padre'] || contacto.nombrePadre || '';
-const telPadre = contacto['Contacto Padre'] || contacto.telPadre || '';
-const nombreMadre = contacto['Nombre Madre'] || contacto.nombreMadre || '';
-const telMadre = contacto['Contacto Madre'] || contacto.telMadre || '';
-const telEmergencia = contacto['Contacto Emergencia'] || contacto.telEmergencia || '';
-
-if (nombrePadre && telPadre) {
-htmlContactos += `
-<div style="background:#f8f9fa;padding:15px;border-radius:8px;">
-<h4 style="color:#333;margin-bottom:8px;">👨 Padre</h4>
-<p style="margin-bottom:10px;">${nombrePadre}<br>☎️ ${telPadre}</p>
-<button class="btn btn-success" style="background:#25D366;padding:8px 15px;font-size:0.9em;" onclick="abrirWhatsApp('${telPadre}', 'Saludos,\\n\\n')">💬 WhatsApp</button>
-</div>
-`;
-}
-
-if (nombreMadre && telMadre) {
-htmlContactos += `
-<div style="background:#f8f9fa;padding:15px;border-radius:8px;">
-<h4 style="color:#333;margin-bottom:8px;">👩 Madre</h4>
-<p style="margin-bottom:10px;">${nombreMadre}<br>☎️ ${telMadre}</p>
-<button class="btn btn-success" style="background:#25D366;padding:8px 15px;font-size:0.9em;" onclick="abrirWhatsApp('${telMadre}', 'Saludos,\\n\\n')">💬 WhatsApp</button>
-</div>
-`;
-}
-
-if (telEmergencia) {
-htmlContactos += `
-<div style="background:#f8f9fa;padding:15px;border-radius:8px;">
-<h4 style="color:#333;margin-bottom:8px;">🚨 Emergencia</h4>
-<p style="margin-bottom:10px;">☎️ ${telEmergencia}</p>
-<button class="btn btn-success" style="background:#25D366;padding:8px 15px;font-size:0.9em;" onclick="abrirWhatsApp('${telEmergencia}', 'Saludos,\\n\\n')">💬 WhatsApp</button>
-</div>
-`;
-}
-}
-
-if (!htmlContactos) {
-htmlContactos = '<p style="color:#f59e0b;font-style:italic;">⚠️ Sin contactos registrados</p>';
-}
-
-// Generar línea de tiempo combinando todo
-let eventos = [];
-
-incidencias.forEach(inc => {
-eventos.push({
-fecha: new Date(inc['Fecha y Hora'] || inc['Fecha'] || inc.fecha || ''),
-tipo: 'incidencia',
-titulo: inc['Tipo de Conducta'] || inc.tipoConducta || 'Incidencia',
-descripcion: inc['Descripción'] || inc.descripcion || '',
-gravedad: inc['Tipo'] || inc['Tipo de falta'] || inc['Tipo de Falta'] || inc.tipoFalta || inc.tipo || 'Sin clasificar',
-docente: inc['Docente'] || inc['Docente que Reporta'] || inc.docenteReporta || inc.docente || 'No especificado'
-});
-});
-
-tardanzas.forEach(tard => {
-eventos.push({
-fecha: new Date(tard['Fecha'] || tard.fecha || ''),
-tipo: 'tardanza',
-titulo: 'Tardanza',
-descripcion: 'Llegada tardía',
-motivo: tard['Motivo'] || tard.motivo || ''
-});
-});
-
-reuniones.forEach(reun => {
-eventos.push({
-fecha: new Date(reun['Fecha'] || reun.fecha || ''),
-tipo: 'reunion',
-titulo: 'Reunión con Padres',
-descripcion: reun['Motivo'] || reun.motivo || '',
-asistio: reun['Asistió'] || reun.asistio || '',
-acuerdos: reun['Acuerdos'] || reun.acuerdos || ''
-});
-});
-
-// Ordenar por fecha (más reciente primero)
-eventos.sort((a, b) => b.fecha - a.fecha);
-
-// Generar HTML de línea de tiempo
-let htmlTimeline = '';
-if (eventos.length === 0) {
-htmlTimeline = '<p style="color:#999;text-align:center;padding:40px;">No hay eventos registrados</p>';
-} else {
-eventos.slice(0, 20).forEach(evento => {
-const fechaTexto = evento.fecha.toLocaleDateString('es-DO', { year: 'numeric', month: 'long', day: 'numeric' });
-const horaTexto = evento.fecha.toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' });
-
-let iconoTipo = '';
-let colorBorde = '';
-let labelTipo = '';
-let detalles = '';
-
-if (evento.tipo === 'incidencia') {
-iconoTipo = '📋';
-colorBorde = evento.gravedad === 'Grave' || evento.gravedad === 'Muy Grave' ? '#dc2626' : '#f59e0b';
-labelTipo = `<div style="display:inline-block;padding:5px 12px;background:${colorBorde};color:white;border-radius:20px;font-size:0.85em;font-weight:600;margin-bottom:10px;">${iconoTipo} ${evento.titulo}</div>`;
-detalles = `
-<p style="margin-bottom:8px;"><strong>Descripción:</strong> ${evento.descripcion}</p>
-<p style="margin-bottom:8px;"><strong>Gravedad:</strong> ${evento.gravedad}</p>
-<p><strong>Reportado por:</strong> ${evento.docente}</p>
-`;
-} else if (evento.tipo === 'tardanza') {
-iconoTipo = '⏰';
-colorBorde = '#3b82f6';
-labelTipo = `<div style="display:inline-block;padding:5px 12px;background:#3b82f6;color:white;border-radius:20px;font-size:0.85em;font-weight:600;margin-bottom:10px;">${iconoTipo} ${evento.titulo}</div>`;
-detalles = evento.motivo ? `<p><strong>Motivo:</strong> ${evento.motivo}</p>` : '<p>Sin motivo especificado</p>';
-} else if (evento.tipo === 'reunion') {
-iconoTipo = '👥';
-colorBorde = '#8b5cf6';
-labelTipo = `<div style="display:inline-block;padding:5px 12px;background:#8b5cf6;color:white;border-radius:20px;font-size:0.85em;font-weight:600;margin-bottom:10px;">${iconoTipo} ${evento.titulo}</div>`;
-detalles = `
-<p style="margin-bottom:8px;"><strong>Motivo:</strong> ${evento.descripcion || 'No especificado'}</p>
-${evento.asistio ? `<p style="margin-bottom:8px;"><strong>Asistió:</strong> ${evento.asistio}</p>` : ''}
-${evento.acuerdos ? `<p><strong>Acuerdos:</strong> ${evento.acuerdos}</p>` : ''}
-`;
-}
-
-htmlTimeline += `
-<div style="position:relative;margin-bottom:25px;background:#f8f9fa;padding:15px;border-radius:8px;border-left:4px solid ${colorBorde};">
-<div style="color:#666;font-size:0.85em;margin-bottom:8px;">${fechaTexto} - ${horaTexto}</div>
-${labelTipo}
-<div style="margin-top:10px;color:#333;line-height:1.6;">${detalles}</div>
-</div>
-`;
-});
-
-if (eventos.length > 20) {
-htmlTimeline += `<p style="text-align:center;color:#666;font-style:italic;">Mostrando los 20 eventos más recientes de ${eventos.length} totales</p>`;
-}
-}
-
-// Crear modal
-const modalHTML = `
-<div id="modalHistorialEstudiante" class="modal" style="display:block;">
-<div class="modal-content" style="max-width:1000px;max-height:90vh;display:flex;flex-direction:column;">
-<div class="modal-header" style="background:linear-gradient(135deg, #059669 0%, #047857 100%);color:white;flex-shrink:0;">
-<h2>👤 ${nombre}</h2>
-<span class="close" onclick="cerrarHistorialEstudiante()">&times;</span>
-</div>
-<div style="background:linear-gradient(135deg, #059669 0%, #047857 100%);color:white;padding:0 25px 25px 25px;flex-shrink:0;">
-<p style="font-size:1.1em;opacity:0.9;">${curso}</p>
-</div>
-<div class="modal-body" style="overflow-y:auto;flex:1;max-height:calc(90vh - 180px);">
-
-<!-- RESUMEN GENERAL -->
-<h3 style="color:#333;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid #e0e0e0;display:flex;align-items:center;gap:10px;">
-📊 Resumen General
-</h3>
-<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:15px;margin-bottom:30px;">
-<div style="background:#fef2f2;border-left:4px solid #dc2626;padding:20px;border-radius:8px;">
-<div style="font-size:2em;font-weight:bold;color:#333;">${incidencias.length}</div>
-<div style="color:#666;font-size:0.9em;margin-top:5px;">Incidencias Totales</div>
-</div>
-<div style="background:#fffbeb;border-left:4px solid #f59e0b;padding:20px;border-radius:8px;">
-<div style="font-size:2em;font-weight:bold;color:#333;">${tardanzasTotales}</div>
-<div style="color:#666;font-size:0.9em;margin-top:5px;">Tardanzas Totales</div>
-</div>
-<div style="background:#eff6ff;border-left:4px solid #3b82f6;padding:20px;border-radius:8px;">
-<div style="font-size:2em;font-weight:bold;color:#333;">${reuniones.length}</div>
-<div style="color:#666;font-size:0.9em;margin-top:5px;">Reuniones con Padres</div>
-</div>
-<div style="background:#f0fdf4;border-left:4px solid #22c55e;padding:20px;border-radius:8px;">
-<div style="font-size:2em;font-weight:bold;color:#333;">${incidenciasLeves}</div>
-<div style="color:#666;font-size:0.9em;margin-top:5px;">Faltas Leves</div>
-</div>
-<div style="background:#fff7ed;border-left:4px solid #f97316;padding:20px;border-radius:8px;">
-<div style="font-size:2em;font-weight:bold;color:#333;">${incidenciasGraves}</div>
-<div style="color:#666;font-size:0.9em;margin-top:5px;">Faltas Graves</div>
-</div>
-<div style="background:#fef2f2;border-left:4px solid #dc2626;padding:20px;border-radius:8px;">
-<div style="font-size:2em;font-weight:bold;color:#333;">${incidenciasMuyGraves}</div>
-<div style="color:#666;font-size:0.9em;margin-top:5px;">Faltas Muy Graves</div>
-</div>
-</div>
-
-<!-- ESTADO DEL ESTUDIANTE -->
-<div style="background:${estadoColor === '#dc2626' ? '#fef2f2' : estadoColor === '#f59e0b' ? '#fffbeb' : '#f0fdf4'};border-left:4px solid ${estadoColor};padding:20px;border-radius:8px;margin-bottom:30px;text-align:center;">
-<div style="font-size:2.5em;font-weight:bold;color:#333;">${estadoIcono}</div>
-<div style="color:#666;font-size:1.1em;margin-top:5px;font-weight:600;">${estadoTexto}</div>
-</div>
-
-<!-- CONTACTOS -->
-<h3 style="color:#333;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid #e0e0e0;display:flex;align-items:center;gap:10px;">
-📞 Información de Contacto
-</h3>
-<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:15px;margin-bottom:30px;">
-${htmlContactos}
-</div>
-
-<!-- LÍNEA DE TIEMPO -->
-<h3 style="color:#333;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid #e0e0e0;display:flex;align-items:center;gap:10px;">
-📅 Línea de Tiempo (Últimos eventos)
-</h3>
-<div style="position:relative;padding-left:40px;">
-<div style="position:absolute;left:15px;top:0;bottom:0;width:2px;background:#e0e0e0;"></div>
-${htmlTimeline}
-</div>
-
-</div>
-</div>
-</div>`;
-
-document.getElementById('modalContainer').innerHTML = modalHTML;
-}
-
-function cerrarHistorialEstudiante() {
-const modal = document.getElementById('modalHistorialEstudiante');
-if (modal) {
-modal.remove();
-}
-}
-
-function abrirWhatsApp(numero, mensaje) {
-// Limpiar número (eliminar espacios, guiones, paréntesis)
-const numeroLimpio = numero.replace(/[\s\-\(\)]/g, '');
-// Codificar mensaje para URL
-const mensajeCodificado = encodeURIComponent(mensaje);
-// Abrir WhatsApp
-window.open(`https://wa.me/${numeroLimpio}?text=${mensajeCodificado}`, '_blank');
-}
-
-// ==========================================
 // RE-HABILITAR FILTROS (después de auth-guard)
 // ==========================================
 
+// Esperar a que auth-guard deshabilite controles, luego re-habilitar los filtros
 setTimeout(function() {
 const filtros = document.querySelectorAll('.filter-select');
 filtros.forEach(filtro => {
@@ -1038,6 +633,7 @@ filtro.style.pointerEvents = 'auto';
 console.log('✅ Filtros re-habilitados');
 }, 1000);
 
+// También re-habilitar cada 500ms por si auth-guard se ejecuta tarde
 const intervalo = setInterval(function() {
 const filtros = document.querySelectorAll('.filter-select');
 let todosHabilitados = true;
@@ -1053,13 +649,14 @@ todosHabilitados = false;
 }
 });
 
+// Si todos están habilitados por 3 ciclos, detener el intervalo
 if (todosHabilitados) {
 clearInterval(intervalo);
 console.log('✅ Filtros permanentemente habilitados');
 }
 }, 500);
 
-console.log('📋 Módulo de incidencias (consulta) con historial completo cargado');
+console.log('📋 Módulo de incidencias (consulta) cargado');
 </script>
 
 </body>
