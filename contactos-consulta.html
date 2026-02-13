@@ -395,11 +395,11 @@ width: 100%;
 
 <!-- BARRA DE BÚSQUEDA -->
 <div class="search-bar">
-<div class="autocomplete-container" style="flex: 6;">
+<div class="autocomplete-container" style="flex: 1; max-width: none;">
 <input type="text" id="buscarContacto" placeholder="🔍 Buscar estudiante o padre..." autocomplete="off">
 <div id="sugerenciasContacto" class="autocomplete-suggestions"></div>
 </div>
-<button class="btn btn-secondary" onclick="recargarContactos()">
+<button class="btn btn-secondary" onclick="recargarContactos()" style="flex-shrink: 0;">
 🔄 Recargar
 </button>
 </div>
