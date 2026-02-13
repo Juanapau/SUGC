@@ -158,24 +158,24 @@ box-shadow: 0 5px 15px rgba(0,0,0,0.4);
 
 .modules-grid {
 display: grid;
-grid-template-columns: repeat(6, 1fr);
+grid-template-columns: repeat(3, 1fr);
 gap: 20px;
 }
 
-/* Primera fila: 3 tarjetas de 2 columnas cada una */
+/* Primera fila: 3 tarjetas */
 .modules-grid .module-card:nth-child(1),
 .modules-grid .module-card:nth-child(2),
 .modules-grid .module-card:nth-child(3) {
-grid-column: span 2;
+grid-column: span 1;
 }
 
-/* Segunda fila: 2 tarjetas centradas de 2 columnas cada una con espacio en medio */
+/* Segunda fila: 2 tarjetas alineadas con las dos primeras de arriba */
 .modules-grid .module-card:nth-child(4) {
-grid-column: 2 / 4;
+grid-column: 1 / 2;
 }
 
 .modules-grid .module-card:nth-child(5) {
-grid-column: 4 / 6;
+grid-column: 2 / 3;
 }
 
 .module-card {
