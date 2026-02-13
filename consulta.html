@@ -158,21 +158,24 @@ box-shadow: 0 5px 15px rgba(0,0,0,0.4);
 
 .modules-grid {
 display: grid;
-grid-template-columns: repeat(3, 1fr);
+grid-template-columns: repeat(6, 1fr);
 gap: 20px;
 }
 
-/* Centrar las dos últimas tarjetas */
+/* Primera fila: 3 tarjetas de 2 columnas cada una */
+.modules-grid .module-card:nth-child(1),
+.modules-grid .module-card:nth-child(2),
+.modules-grid .module-card:nth-child(3) {
+grid-column: span 2;
+}
+
+/* Segunda fila: 2 tarjetas centradas de 2 columnas cada una con espacio en medio */
 .modules-grid .module-card:nth-child(4) {
-grid-column: 1 / 2;
-margin-left: auto;
-margin-right: 0;
+grid-column: 2 / 4;
 }
 
 .modules-grid .module-card:nth-child(5) {
-grid-column: 3 / 4;
-margin-left: 0;
-margin-right: auto;
+grid-column: 4 / 6;
 }
 
 .module-card {
@@ -363,11 +366,12 @@ flex-direction: column;
 grid-template-columns: 1fr;
 }
 
+.modules-grid .module-card:nth-child(1),
+.modules-grid .module-card:nth-child(2),
+.modules-grid .module-card:nth-child(3),
 .modules-grid .module-card:nth-child(4),
 .modules-grid .module-card:nth-child(5) {
 grid-column: auto;
-margin-left: 0;
-margin-right: 0;
 }
 }
 </style>
