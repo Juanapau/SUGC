@@ -1,4 +1,3 @@
-
 // ========================================
 // SISTEMA DE GESTIÓN DE CONVIVENCIA CENSA
 // ========================================
@@ -2788,6 +2787,9 @@ function crearModalReuniones() {
                     </div>
                     <div class="form-group">
                         <label>Nombre del Padre/Madre</label>
+                        <select id="selectPadreReunion" style="display:none;width:100%;padding:8px 12px;border:1px solid #d1d5db;border-radius:6px;font-size:0.95em;margin-bottom:6px;background:#fff;cursor:pointer;" onchange="document.getElementById('nombrePadreReunion').value=this.value">
+                            <option value="">-- Seleccione el padre/madre --</option>
+                        </select>
                         <input type="text" id="nombrePadreReunion" placeholder="Nombre completo">
                     </div>
                     <div class="form-group">
@@ -6676,20 +6678,48 @@ function autocompletarNombrePadre(nombreEstudiante) {
         const nombre = c['Nombre Estudiante'] || c['Mombre Estudiante'] || c.estudiante || '';
         return nombre.toLowerCase() === nombreEstudiante.toLowerCase();
     });
-    
+
+    const campoNombre = document.getElementById('nombrePadreReunion');
+    const selectPadre = document.getElementById('selectPadreReunion');
+
+    if (!campoNombre || !selectPadre) return;
+
+    // Resetear
+    campoNombre.value = '';
+    selectPadre.innerHTML = '<option value="">-- Seleccione el padre/madre --</option>';
+
     if (contacto) {
         const nombrePadre = contacto['Nombre Padre'] || contacto.nombrePadre || '';
         const nombreMadre = contacto['Nombre Madre'] || contacto.nombreMadre || '';
-        
-        const campoNombre = document.getElementById('nombrePadreReunion');
-        if (campoNombre) {
-            if (nombreMadre) {
-                campoNombre.value = nombreMadre;
-                campoNombre.placeholder = `Padre: ${nombrePadre || 'No registrado'}`;
-            } else if (nombrePadre) {
-                campoNombre.value = nombrePadre;
-            }
+        const nombreTutor = contacto['Nombre Tutor'] || contacto.nombreTutor || '';
+
+        const opciones = [];
+        if (nombrePadre && nombrePadre !== '-') opciones.push({ label: '\u{1F468} Padre: ' + nombrePadre, value: nombrePadre });
+        if (nombreMadre && nombreMadre !== '-') opciones.push({ label: '\u{1F469} Madre: ' + nombreMadre, value: nombreMadre });
+        if (nombreTutor && nombreTutor !== '-') opciones.push({ label: '\u{1F9D1} Tutor/a: ' + nombreTutor, value: nombreTutor });
+
+        if (opciones.length > 1) {
+            // Hay multiples contactos: mostrar dropdown
+            opciones.forEach(op => {
+                const opt = document.createElement('option');
+                opt.value = op.value;
+                opt.textContent = op.label;
+                selectPadre.appendChild(opt);
+            });
+            selectPadre.style.display = 'block';
+            campoNombre.placeholder = 'Seleccione arriba o escriba el nombre';
+        } else if (opciones.length === 1) {
+            // Solo hay uno: autocompletar directamente
+            selectPadre.style.display = 'none';
+            campoNombre.value = opciones[0].value;
+        } else {
+            // Sin contactos registrados
+            selectPadre.style.display = 'none';
+            campoNombre.placeholder = 'Sin contactos registrados';
         }
+    } else {
+        selectPadre.style.display = 'none';
+        campoNombre.placeholder = 'Nombre completo';
     }
 }
 
@@ -6747,6 +6777,8 @@ function registrarReunion(e) {
     }
     
     document.getElementById('formReunion').reset();
+    const selPadre = document.getElementById('selectPadreReunion');
+    if (selPadre) { selPadre.style.display = 'none'; selPadre.innerHTML = '<option value="">-- Seleccione el padre/madre --</option>'; }
     cargarTablaReuniones();
     actualizarEstadisticasReuniones();
     buscarReuniones(); // Actualizar tabla de búsqueda también
@@ -6845,6 +6877,8 @@ function editarReunion(indice) {
 function cancelarEdicionReunion() {
     // Limpiar formulario
     document.getElementById('formReunion').reset();
+    const selPadre2 = document.getElementById('selectPadreReunion');
+    if (selPadre2) { selPadre2.style.display = 'none'; selPadre2.innerHTML = '<option value="">-- Seleccione el padre/madre --</option>'; }
     document.getElementById('fechaReunion').value = new Date().toISOString().slice(0,16);
     
     // Salir del modo edición
