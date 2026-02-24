@@ -528,7 +528,9 @@ if (typeof notificarNuevaIncidencia === 'function') {
 await notificarNuevaIncidencia(
 datos['Nombre Estudiante'],
 datos['Tipo de falta'],
-datos['Tipo de Conducta']
+datos['Tipo de Conducta'],
+datos['Docente'],
+datos['Curso']
 );
 console.log('✅ Notificación enviada');
 } else {
