@@ -112,7 +112,10 @@ class NotificacionesGoogleSheets {
                 console.log('Error al enviar:', error);
             });
 
-            setTimeout(() => this.cargarNotificaciones(true), 1000);
+            // Solo recargar panel si existe en esta página
+            if (document.getElementById('notifPanel')) {
+                setTimeout(() => this.cargarNotificaciones(true), 1000);
+            }
             return true;
         } catch (error) {
             console.error('Error al crear notificación:', error);
@@ -482,6 +485,7 @@ function agregarEventListeners() {
 }
 
 function actualizarPanelNotificaciones() {
+    if (!document.getElementById('notifPanel')) return; // No existe en esta página
     const tabActiva = document.querySelector('.notif-tab.active');
     const filtro = tabActiva ? tabActiva.getAttribute('data-tab') : 'todas';
     
@@ -577,7 +581,17 @@ async function limpiarNotifLeidas() {
 // ========================================
 
 async function notificarNuevaIncidencia(estudiante, tipoFalta, tipoConducta, docente, curso) {
-    if (!sistemaNotificacionesSheets) return;
+    // Si no está inicializado, intentar inicializar ahora
+    if (!sistemaNotificacionesSheets) {
+        console.log('⚠️ sistemaNotificacionesSheets no inicializado, intentando inicializar...');
+        inicializarSistemaNotificaciones();
+        // Esperar un momento para que se inicialice
+        await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    if (!sistemaNotificacionesSheets) {
+        console.warn('❌ No se pudo inicializar el sistema de notificaciones');
+        return;
+    }
     
     // TODAS las incidencias son importantes (badge amarillo)
     const prioridad = 'importante';
