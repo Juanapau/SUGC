@@ -2787,7 +2787,7 @@ function crearModalReuniones() {
                     </div>
                     <div class="form-group">
                         <label>Nombre del Padre/Madre</label>
-                        <select id="selectPadreReunion" style="display:none;width:100%;padding:8px 12px;border:1px solid #d1d5db;border-radius:6px;font-size:0.95em;margin-bottom:6px;background:#fff;cursor:pointer;" onchange="document.getElementById('nombrePadreReunion').value=this.value">
+                        <select id="selectPadreReunion" style="display:none;width:100%;padding:8px 12px;border:1px solid #d1d5db;border-radius:6px;font-size:0.95em;background:#fff;cursor:pointer;" onchange="onSelectPadreReunion(this.value)">
                             <option value="">-- Seleccione el padre/madre --</option>
                         </select>
                         <input type="text" id="nombrePadreReunion" placeholder="Nombre completo">
@@ -6673,6 +6673,22 @@ function seleccionarEstudianteReunion(nombre, curso) {
     autocompletarNombrePadre(nombre);
 }
 
+function onSelectPadreReunion(value) {
+    const campoNombre = document.getElementById('nombrePadreReunion');
+    if (!campoNombre) return;
+    if (value === '__manual__') {
+        campoNombre.style.display = 'block';
+        campoNombre.value = '';
+        campoNombre.focus();
+    } else if (value) {
+        campoNombre.value = value;
+        campoNombre.style.display = 'none';
+    } else {
+        campoNombre.value = '';
+        campoNombre.style.display = 'none';
+    }
+}
+
 function autocompletarNombrePadre(nombreEstudiante) {
     const contacto = datosContactos.find(c => {
         const nombre = c['Nombre Estudiante'] || c['Mombre Estudiante'] || c.estudiante || '';
@@ -6686,6 +6702,7 @@ function autocompletarNombrePadre(nombreEstudiante) {
 
     // Resetear
     campoNombre.value = '';
+    campoNombre.style.display = 'block';
     selectPadre.innerHTML = '<option value="">-- Seleccione el padre/madre --</option>';
 
     if (contacto) {
@@ -6699,26 +6716,32 @@ function autocompletarNombrePadre(nombreEstudiante) {
         if (nombreTutor && nombreTutor !== '-') opciones.push({ label: '\u{1F9D1} Tutor/a: ' + nombreTutor, value: nombreTutor });
 
         if (opciones.length > 1) {
-            // Hay multiples contactos: mostrar dropdown
             opciones.forEach(op => {
                 const opt = document.createElement('option');
                 opt.value = op.value;
                 opt.textContent = op.label;
                 selectPadre.appendChild(opt);
             });
+            // Add manual entry option
+            const optManual = document.createElement('option');
+            optManual.value = '__manual__';
+            optManual.textContent = '\u270F\uFE0F Escribir manualmente...';
+            selectPadre.appendChild(optManual);
+
             selectPadre.style.display = 'block';
-            campoNombre.placeholder = 'Seleccione arriba o escriba el nombre';
+            campoNombre.style.display = 'none'; // hide input, select is enough
         } else if (opciones.length === 1) {
-            // Solo hay uno: autocompletar directamente
             selectPadre.style.display = 'none';
+            campoNombre.style.display = 'block';
             campoNombre.value = opciones[0].value;
         } else {
-            // Sin contactos registrados
             selectPadre.style.display = 'none';
+            campoNombre.style.display = 'block';
             campoNombre.placeholder = 'Sin contactos registrados';
         }
     } else {
         selectPadre.style.display = 'none';
+        campoNombre.style.display = 'block';
         campoNombre.placeholder = 'Nombre completo';
     }
 }
@@ -6831,7 +6854,11 @@ function editarReunion(indice) {
     document.getElementById('estudianteReunion').value = reunion['Nombre Estudiante'] || '';
     document.getElementById('cursoReunion').value = reunion['Curso'] || '';
     document.getElementById('padrePresente').value = reunion['Padre/Madre Presente'] || '';
-    document.getElementById('nombrePadreReunion').value = reunion['Nombre Padre/Madre'] || '';
+    // Al editar: mostrar input, ocultar select
+    const _selPadreEdit = document.getElementById('selectPadreReunion');
+    const _inputPadreEdit = document.getElementById('nombrePadreReunion');
+    if (_selPadreEdit) _selPadreEdit.style.display = 'none';
+    if (_inputPadreEdit) { _inputPadreEdit.style.display = 'block'; _inputPadreEdit.value = reunion['Nombre Padre/Madre'] || ''; }
     document.getElementById('docenteReunion').value = reunion['Personal UGC'] || '';
     document.getElementById('motivoReunion').value = reunion['Motivo'] || '';
     document.getElementById('situacionTratada').value = reunion['Situación Tratada'] || '';
