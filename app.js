@@ -18,8 +18,7 @@ let CONFIG = {
     urlNotasRapidas: 'https://script.google.com/macros/s/AKfycbz-Dka2Nj27ArjgQhR72s5wl8AohebgppDmnWux4rnLrEG5zQyOco9uwxlJqgAzJtW17Q/exec',
      // 👉 URL de Maestros
     urlMaestros: 'https://script.google.com/macros/s/AKfycbxTKAwY9m_AuxV-d9IsOaa_IDv1ZAvWv26RdgiIzD2Y6ucX_CtKVjrWbnR5Fefd12uV/exec',
-    // 👉 URL de Horarios de Maestros
-    urlHorarios: 'https://script.google.com/macros/s/AKfycbxF3w0jVliGMHStLYA5Sp_K5CHaamF1EM26_ilaab8rulNdENEZffU_N2wsgIe-fM65/exec', 
+    urlHorarios: 'https://script.google.com/macros/s/AKfycbxF3w0jVliGMHStLYA5Sp_K5CHaamF1EM26_ilaab8rulNdENEZffU_N2wsgIe-fM65/exec', // 👉 URL de Horarios de Maestros
      // 👉 URL de Notificaciones
     urlNotificaciones: 'https://script.google.com/macros/s/AKfycbxza27B1vj81BpWe_8qrsQusxE0YC2FzoY1j4yAKkG3uq89gA1xIljm3PuWCQljJojZ2Q/exec'
 };
@@ -8103,22 +8102,35 @@ function getMaestroEnCursoAhora(curso) {
 
 function cargarHorariosDesdeSheets() {
     const grid = document.getElementById('cursosHorarioGrid');
-    const resultado = document.getElementById('resultadoHorario');
 
     if (!CONFIG.urlHorarios) {
-        if (grid) grid.innerHTML = '<p style="color:#f59e0b;font-size:0.9em;">⚠️ URL de Horarios no configurada. Ve a Configuracion para agregarla.</p>';
+        if (grid) grid.innerHTML = '<p style="color:#f59e0b;font-size:0.9em;">⚠️ URL de Horarios no configurada.</p>';
         return;
     }
 
     if (grid) grid.innerHTML = '<p style="color:#6b7280;font-size:0.9em;">⏳ Cargando horarios...</p>';
 
-    cargarDatosDesdeGoogleSheets(CONFIG.urlHorarios)
-        .then(function(filas) {
-            // Convertir filas planas a estructura anidada: { Maestro: { Dia: { P1..P8 } } }
+    // Llamada directa con fetch porque el Apps Script de horarios
+    // devuelve { success: true, data: [...] }, no un array directo
+    fetch(CONFIG.urlHorarios)
+        .then(function(response) { return response.json(); })
+        .then(function(respuesta) {
+            // Aceptar tanto { success, data: [...] } como array directo
+            const filas = Array.isArray(respuesta) ? respuesta
+                        : (respuesta.data && Array.isArray(respuesta.data)) ? respuesta.data
+                        : [];
+
+            if (filas.length === 0) {
+                console.warn('Horarios: la hoja devolvio 0 filas. Verifica que poblarHorariosIniciales() fue ejecutado.');
+                if (grid) grid.innerHTML = '<p style="color:#f59e0b;font-size:0.9em;">⚠️ La hoja de horarios esta vacia. Ejecuta poblarHorariosIniciales() en Apps Script.</p>';
+                return;
+            }
+
+            // Convertir filas planas → { Maestro: { Dia: { '1'...'8': curso } } }
             const cache = {};
             filas.forEach(function(fila) {
-                const maestro = fila['Maestro'] || '';
-                const dia = fila['Dia'] || '';
+                const maestro = (fila['Maestro'] || '').trim();
+                const dia     = (fila['Dia']     || '').trim();
                 if (!maestro || !dia) return;
                 if (!cache[maestro]) cache[maestro] = {};
                 cache[maestro][dia] = {
@@ -8132,13 +8144,14 @@ function cargarHorariosDesdeSheets() {
                     '8': fila['P8'] || null,
                 };
             });
+
             horariosCache = cache;
-            console.log('Horarios cargados:', Object.keys(cache).length, 'maestros');
+            console.log('✅ Horarios cargados:', Object.keys(cache).length, 'maestros,', filas.length, 'filas');
             renderCursosHorario();
         })
         .catch(function(err) {
             console.error('Error cargando horarios:', err);
-            if (grid) grid.innerHTML = '<p style="color:#ef4444;font-size:0.9em;">❌ Error al cargar horarios. Verifica la URL en Configuracion.</p>';
+            if (grid) grid.innerHTML = '<p style="color:#ef4444;font-size:0.9em;">❌ Error de conexion al cargar horarios. Revisa la consola del navegador (F12) para mas detalles.</p>';
         });
 }
 
