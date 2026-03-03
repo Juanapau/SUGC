@@ -8053,11 +8053,11 @@ const DIAS_HORARIO = ['Lu', 'Mar', 'Mi', 'Jue', 'Vie'];
 
 const TODOS_CURSOS_HORARIO = [
     '1roA','1roB','1roC',
-    '2doA','2doB',
-    '3roA','3roB',
+    '2doA','2doB','2doC',
+    '3roA','3roB','3roC',
     '4toA','4toB','4toC',
-    '5toA','5toI',
-    '6toA','6toI'
+    '5toA','5toB','5toC',
+    '6toA','6toB','6toC'
 ];
 
 let intervaloRelojHorario = null;
