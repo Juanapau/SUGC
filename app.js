@@ -8411,7 +8411,7 @@ function calcularDatosCursos() {
         // Estudiantes únicos con al menos una incidencia
         const estudiantesSet = new Set();
         inc.forEach(function(i) {
-            const nombre = (i['Estudiante'] || i.estudiante || '').trim();
+            const nombre = (i['Nombre Estudiante'] || i['Estudiante'] || i.estudiante || '').trim();
             if (nombre) estudiantesSet.add(nombre);
         });
         const afectados = estudiantesSet.size;
@@ -8445,7 +8445,7 @@ function renderGraficoCursos() {
     const totalAfectados = (function() {
         const inc = filtrarIncidenciasPorPeriodo();
         const s = new Set();
-        inc.forEach(function(i) { const n = (i['Estudiante'] || i.estudiante || '').trim(); if (n) s.add(n); });
+        inc.forEach(function(i) { const n = (i['Nombre Estudiante'] || i['Estudiante'] || i.estudiante || '').trim(); if (n) s.add(n); });
         return s.size;
     })();
     const cursoTop = conDatos.length > 0 ? conDatos.reduce(function(a, b) { return b.indice > a.indice ? b : a; }).curso : '—';
