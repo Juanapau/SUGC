@@ -380,120 +380,58 @@ urlContactos: 'https://script.google.com/macros/s/AKfycbxcnvwmyorCWze_CkDPEUtdHP
 };
 
 window.addEventListener('load', function() {
+// Leer todas las URLs del localStorage (incluyendo contactos)
 const configGuardada = localStorage.getItem('censaConfig');
 if (configGuardada) {
 const configTemp = JSON.parse(configGuardada);
 if (configTemp.urlIncidencias) CONFIG.urlIncidencias = configTemp.urlIncidencias;
-if (configTemp.urlTardanzas) CONFIG.urlTardanzas = configTemp.urlTardanzas;
+if (configTemp.urlTardanzas)   CONFIG.urlTardanzas   = configTemp.urlTardanzas;
 if (configTemp.urlEstudiantes) CONFIG.urlEstudiantes = configTemp.urlEstudiantes;
+if (configTemp.urlContactos)   CONFIG.urlContactos   = configTemp.urlContactos;
 console.log('✅ Configuración actualizada desde localStorage');
 }
-console.log('📊 URLs:', CONFIG);
-
 cargarEstadisticas();
 });
 
+// Carga una URL y devuelve [] si falla — nunca lanza excepción
 async function cargarDatosDesdeGoogleSheets(url) {
 try {
 const response = await fetch(url);
-if (!response.ok) throw new Error('Error en la respuesta');
+if (!response.ok) throw new Error('HTTP ' + response.status);
 return await response.json();
 } catch (error) {
-console.error('Error:', error);
+console.warn('⚠️ No se pudo cargar ' + url + ':', error.message);
 return [];
 }
 }
 
+// Helper para actualizar un elemento sin lanzar error si no existe
+function setEl(id, val) {
+const el = document.getElementById(id);
+if (el) el.textContent = val;
+}
+
 async function cargarEstadisticas() {
-try {
-// Cargar incidencias
-let incidencias = [];
-if (CONFIG.urlIncidencias) {
-incidencias = await cargarDatosDesdeGoogleSheets(CONFIG.urlIncidencias);
-}
+// Cargar las 4 fuentes EN PARALELO — si una falla las demás siguen
+const [incidencias, tardanzas, estudiantes, contactos] = await Promise.all([
+CONFIG.urlIncidencias ? cargarDatosDesdeGoogleSheets(CONFIG.urlIncidencias) : Promise.resolve([]),
+CONFIG.urlTardanzas   ? cargarDatosDesdeGoogleSheets(CONFIG.urlTardanzas)   : Promise.resolve([]),
+CONFIG.urlEstudiantes ? cargarDatosDesdeGoogleSheets(CONFIG.urlEstudiantes) : Promise.resolve([]),
+CONFIG.urlContactos   ? cargarDatosDesdeGoogleSheets(CONFIG.urlContactos)   : Promise.resolve([])
+]);
 
-// Cargar tardanzas
-let tardanzas = [];
-if (CONFIG.urlTardanzas) {
-tardanzas = await cargarDatosDesdeGoogleSheets(CONFIG.urlTardanzas);
-}
+// Actualizar tarjetas — setEl no rompe si el ID fue eliminado
+setEl('totalIncidencias', incidencias.length);
+setEl('totalTardanzas',   tardanzas.length);
+setEl('totalEstudiantes', estudiantes.length);
+setEl('totalContactos',   contactos.length);
 
-// Cargar estudiantes
-let estudiantes = [];
-if (CONFIG.urlEstudiantes) {
-estudiantes = await cargarDatosDesdeGoogleSheets(CONFIG.urlEstudiantes);
-}
+console.log(`✅ Cargado: ${incidencias.length} incidencias, ${tardanzas.length} tardanzas, ${estudiantes.length} estudiantes, ${contactos.length} contactos`);
 
-// Cargar contactos
-let contactos = [];
-if (CONFIG.urlContactos) {
-contactos = await cargarDatosDesdeGoogleSheets(CONFIG.urlContactos);
-}
-
-// Calcular estadísticas
-const mesActual = new Date().getMonth();
-const añoActual = new Date().getFullYear();
-
-const incidenciasMes = incidencias.filter(inc => {
-try {
-const fecha = new Date(inc['Fecha y Hora']);
-return fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
-} catch {
-return false;
-}
-});
-
-// Calcular incidencias por tipo
-const incidenciasLeves = incidencias.filter(inc => {
-const tipo = (inc['Tipo de falta'] || '').toLowerCase();
-return tipo.includes('leve') && !tipo.includes('grave');
-}).length;
-
-const incidenciasGraves = incidencias.filter(inc => {
-const tipo = (inc['Tipo de falta'] || '').toLowerCase();
-return tipo === 'grave' || tipo.includes('falta grave');
-}).length;
-
-const incidenciasMuyGraves = incidencias.filter(inc => {
-const tipo = (inc['Tipo de falta'] || '').toLowerCase();
-return tipo.includes('muy grave');
-}).length;
-
-const tardanzasMes = tardanzas.filter(tard => {
-try {
-const fecha = new Date(tard['Fecha']);
-return fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual;
-} catch {
-return false;
-}
-});
-
-// Actualizar UI
-document.getElementById('totalIncidencias').textContent = incidencias.length;
-document.getElementById('incidenciasMes').textContent = incidenciasMes.length;
-document.getElementById('incidenciasLeves').textContent = incidenciasLeves;
-document.getElementById('incidenciasGraves').textContent = incidenciasGraves;
-document.getElementById('incidenciasMuyGraves').textContent = incidenciasMuyGraves;
-
-document.getElementById('totalTardanzas').textContent = tardanzas.length;
-document.getElementById('tardanzasMes').textContent = tardanzasMes.length;
-
-document.getElementById('totalEstudiantes').textContent = estudiantes.length;
-document.getElementById('totalContactos').textContent = contactos.length;
-
-console.log('✅ Estadísticas cargadas');
-console.log(`📊 Incidencias: ${incidencias.length} (Mes: ${incidenciasMes.length})`);
-console.log(`📊 Por tipo: Leves=${incidenciasLeves}, Graves=${incidenciasGraves}, Muy Graves=${incidenciasMuyGraves}`);
-console.log(`📊 Tardanzas: ${tardanzas.length} (Mes: ${tardanzasMes.length})`);
-console.log(`📊 Estudiantes: ${estudiantes.length}, Contactos: ${contactos.length}`);
-
-// Guardar datos en variables accesibles para el gráfico
+// Guardar para el gráfico y renderizar
 window._incidencias = incidencias;
 window._estudiantes = estudiantes;
 renderGraficoCursos();
-} catch (error) {
-console.error('Error cargando estadísticas:', error);
-}
 }
 
 console.log('📊 Módulo de estadísticas (consulta) cargado');
