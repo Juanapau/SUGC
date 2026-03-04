@@ -8432,26 +8432,23 @@ function calcularDatosCursos() {
         //
         // Los tres componentes se promedian → score 0-1 → se normaliza a % en renderGraficoCursos
 
-        // Componente 1: gravedad promedio normalizada
-        const gravPromedio = total > 0 ? (muyGraves * 3 + graves * 2 + leves * 1) / (total * 3) : 0;
+        // ── Índice de Riesgo en escala absoluta fija (0–100%) ──
+        // Puntos ponderados: Muy Grave=3, Grave=2, Leve=1
+        // Cobertura: proporción del curso afectada
+        // Referencia fija evita que cursos con pocas faltas marquen 100%
+        const puntosPonderados = muyGraves * 3 + graves * 2 + leves * 1;
 
-        // Componente 2: cobertura real del curso
         const totalEstCurso = datosEstudiantes.filter(function(e) {
             return (e['Curso'] || e.curso || '') === curso;
         }).length;
-        const cobertura = totalEstCurso > 0 ? Math.min(afectados / totalEstCurso, 1) : (afectados > 0 ? 0.5 : 0);
+        const tamCurso = totalEstCurso > 0 ? totalEstCurso : 30;
+        const cobertura = Math.min(afectados / tamCurso, 1);
 
-        // Componente 3: reincidencia (faltas por alumno afectado, máx referencia = 5)
-        const faltasPorAlumno = afectados > 0 ? total / afectados : 0;
-        const reincidencia = Math.min(faltasPorAlumno / 5, 1);
+        const scoreRaw = puntosPonderados * (1 + cobertura);
+        const REFERENCIA_CRITICA = tamCurso * 2;
+        const indiceRaw = scoreRaw / REFERENCIA_CRITICA;
 
-        // Score compuesto: promedio ponderado (gravedad 40%, cobertura 40%, reincidencia 20%)
-        const indiceRaw = afectados > 0
-            ? (gravPromedio * 0.4 + cobertura * 0.4 + reincidencia * 0.2)
-            : 0;
-
-        return { curso, leves, graves, muyGraves, total, afectados, indiceRaw,
-                 _debug: { gravPromedio, cobertura, reincidencia, totalEstCurso } };
+        return { curso, leves, graves, muyGraves, total, afectados, indiceRaw };
     });
 
     // Ordenar
@@ -8459,11 +8456,8 @@ function calcularDatosCursos() {
     if (orden === 'afectados')  datos.sort(function(a, b) { return b.afectados - a.afectados; });
     if (orden === 'nombre')     datos.sort(function(a, b) { return a.curso.localeCompare(b.curso); });
 
-    // Normalizar indiceRaw a porcentaje 0-100
-    const maxRaw = Math.max.apply(null, datos.map(function(d) { return d.indiceRaw || 0; })) || 1;
-    datos.forEach(function(d) {
-        d.indice = Math.round((d.indiceRaw / maxRaw) * 100);
-    });
+    // Convertir a % absoluto, cappear a 100
+    datos.forEach(function(d) { d.indice = Math.min(Math.round(d.indiceRaw * 100), 100); });
 
     return datos;
 }
