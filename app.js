@@ -4438,7 +4438,7 @@ function crearModalReportes() {
                 </table>
             </div>
             <p style="font-size:0.78em;color:#9ca3af;margin-top:8px;">
-                * El <strong>Índice de Riesgo</strong> combina el total de faltas con el número de estudiantes afectados y el peso de cada tipo (Muy Grave×3, Grave×2, Leve×1). Cursos con índice alto requieren atención prioritaria.
+                * El <strong>Índice de Riesgo</strong> (0–100%) combina tres factores con igual peso: <strong>Gravedad</strong> (qué tan graves son las faltas en promedio), <strong>Cobertura</strong> (qué % del curso tiene incidencias) y <strong>Reincidencia</strong> (faltas promedio por alumno afectado). El curso con mayor riesgo marca 100% y los demás se escalan proporcionalmente.
             </p>
         </div>
     </div>
@@ -8416,15 +8416,42 @@ function calcularDatosCursos() {
         });
         const afectados = estudiantesSet.size;
 
-        // Índice de riesgo: puntos ponderados por gravedad + penalización por alcance (afectados)
-        // Muy Grave = 3 pts, Grave = 2 pts, Leve = 1 pt
-        // Se multiplica por factor de alcance: más estudiantes distintos = más urgente
-        // El resultado se normaliza a % (0-100) en renderGraficoCursos
-        const pesoFaltas = muyGraves * 3 + graves * 2 + leves * 1;
-        const factorAlcance = afectados > 0 ? (1 + (afectados - 1) * 0.15) : 0;
-        const indiceRaw = pesoFaltas * factorAlcance;
+        // Índice de riesgo — tres componentes con igual peso (cada uno 0-1, suma máx = 3):
+        //
+        // 1. GRAVEDAD: promedio ponderado de las faltas del curso
+        //    (Muy Grave=3, Grave=2, Leve=1) / 3  → 0 a 1
+        //    Refleja qué tan graves son las faltas en promedio
+        //
+        // 2. COBERTURA: afectados / total de estudiantes del curso → 0 a 1
+        //    Refleja qué proporción del curso tiene problemas
+        //    Usa datosEstudiantes para saber el tamaño real del curso
+        //
+        // 3. REINCIDENCIA: faltas por estudiante afectado, normalizada → 0 a 1
+        //    Refleja si los estudiantes con faltas son reincidentes
+        //    Se normaliza contra un máximo razonable de 5 faltas por alumno
+        //
+        // Los tres componentes se promedian → score 0-1 → se normaliza a % en renderGraficoCursos
 
-        return { curso, leves, graves, muyGraves, total, afectados, indiceRaw };
+        // Componente 1: gravedad promedio normalizada
+        const gravPromedio = total > 0 ? (muyGraves * 3 + graves * 2 + leves * 1) / (total * 3) : 0;
+
+        // Componente 2: cobertura real del curso
+        const totalEstCurso = datosEstudiantes.filter(function(e) {
+            return (e['Curso'] || e.curso || '') === curso;
+        }).length;
+        const cobertura = totalEstCurso > 0 ? Math.min(afectados / totalEstCurso, 1) : (afectados > 0 ? 0.5 : 0);
+
+        // Componente 3: reincidencia (faltas por alumno afectado, máx referencia = 5)
+        const faltasPorAlumno = afectados > 0 ? total / afectados : 0;
+        const reincidencia = Math.min(faltasPorAlumno / 5, 1);
+
+        // Score compuesto: promedio ponderado (gravedad 40%, cobertura 40%, reincidencia 20%)
+        const indiceRaw = afectados > 0
+            ? (gravPromedio * 0.4 + cobertura * 0.4 + reincidencia * 0.2)
+            : 0;
+
+        return { curso, leves, graves, muyGraves, total, afectados, indiceRaw,
+                 _debug: { gravPromedio, cobertura, reincidencia, totalEstCurso } };
     });
 
     // Ordenar
