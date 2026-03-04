@@ -108,14 +108,14 @@ gap: 12px;
 
 .stats-grid {
 display: grid;
-grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-gap: 20px;
+grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+gap: 14px;
 margin-bottom: 30px;
 }
 
 .stat-card {
 background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-padding: 25px;
+padding: 16px 12px;
 border-radius: 12px;
 text-align: center;
 border-top: 4px solid #2a5298;
@@ -124,48 +124,29 @@ transition: all 0.3s;
 }
 
 .stat-card:hover {
-transform: translateY(-5px);
+transform: translateY(-3px);
 box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 .stat-card .icon {
-font-size: 3em;
-margin-bottom: 10px;
+font-size: 2em;
+margin-bottom: 6px;
 }
 
 .stat-card .number {
-font-size: 2.5em;
+font-size: 2em;
 font-weight: bold;
 color: #2a5298;
 display: block;
-margin-bottom: 5px;
+margin-bottom: 4px;
 }
 
 .stat-card .label {
-font-size: 0.95em;
+font-size: 0.82em;
 color: #666;
 font-weight: 600;
 }
 
-/* Tarjetas con detalles */
-.stat-card-detailed {
-padding-bottom: 20px;
-}
-
-.stat-details {
-margin-top: 15px;
-padding-top: 15px;
-border-top: 1px solid #e0e0e0;
-}
-
-.stat-detail-item {
-display: flex;
-justify-content: center;
-align-items: center;
-gap: 8px;
-margin-bottom: 12px;
-font-size: 0.9em;
-}
 
 .detail-label {
 color: #666;
@@ -270,44 +251,18 @@ header { flex-direction: column; text-align: center; }
 <div class="content-card">
 
 <div class="stats-grid">
-<!-- TARJETA 1: TOTAL INCIDENCIAS CON DETALLES -->
-<div class="stat-card stat-card-detailed">
+<!-- TARJETA 1: TOTAL INCIDENCIAS -->
+<div class="stat-card">
 <div class="icon">📋</div>
 <span class="number" id="totalIncidencias">0</span>
 <span class="label">Total Incidencias</span>
-<div class="stat-details">
-<div class="stat-detail-item">
-<span class="detail-label">Este mes:</span>
-<span class="detail-value" id="incidenciasMes">0</span>
-</div>
-<div class="stat-breakdown">
-<div class="breakdown-item">
-<span class="breakdown-dot leve"></span>
-<span class="breakdown-text">Leves: <strong id="incidenciasLeves">0</strong></span>
-</div>
-<div class="breakdown-item">
-<span class="breakdown-dot grave"></span>
-<span class="breakdown-text">Graves: <strong id="incidenciasGraves">0</strong></span>
-</div>
-<div class="breakdown-item">
-<span class="breakdown-dot muy-grave"></span>
-<span class="breakdown-text">Muy Graves: <strong id="incidenciasMuyGraves">0</strong></span>
-</div>
-</div>
-</div>
 </div>
 
-<!-- TARJETA 2: TOTAL TARDANZAS CON ESTE MES -->
-<div class="stat-card stat-card-detailed">
+<!-- TARJETA 2: TOTAL TARDANZAS -->
+<div class="stat-card">
 <div class="icon">⏰</div>
 <span class="number" id="totalTardanzas">0</span>
 <span class="label">Total Tardanzas</span>
-<div class="stat-details">
-<div class="stat-detail-item">
-<span class="detail-label">Este mes:</span>
-<span class="detail-value" id="tardanzasMes">0</span>
-</div>
-</div>
 </div>
 
 <!-- TARJETA 3: ESTUDIANTES REGISTRADOS -->
