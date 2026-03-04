@@ -8416,16 +8416,27 @@ function calcularDatosCursos() {
         });
         const afectados = estudiantesSet.size;
 
-        // Índice de riesgo: peso por gravedad × afectados (cuantos más estudiantes distintos, más urgente)
-        const indice = (muyGraves * 3 + graves * 2 + leves * 1) * (afectados > 0 ? (1 + afectados * 0.3) : 1);
+        // Índice de riesgo: puntos ponderados por gravedad + penalización por alcance (afectados)
+        // Muy Grave = 3 pts, Grave = 2 pts, Leve = 1 pt
+        // Se multiplica por factor de alcance: más estudiantes distintos = más urgente
+        // El resultado se normaliza a % (0-100) en renderGraficoCursos
+        const pesoFaltas = muyGraves * 3 + graves * 2 + leves * 1;
+        const factorAlcance = afectados > 0 ? (1 + (afectados - 1) * 0.15) : 0;
+        const indiceRaw = pesoFaltas * factorAlcance;
 
-        return { curso, leves, graves, muyGraves, total, afectados, indice: Math.round(indice * 10) / 10 };
+        return { curso, leves, graves, muyGraves, total, afectados, indiceRaw };
     });
 
     // Ordenar
     if (orden === 'total')      datos.sort(function(a, b) { return b.total - a.total; });
     if (orden === 'afectados')  datos.sort(function(a, b) { return b.afectados - a.afectados; });
     if (orden === 'nombre')     datos.sort(function(a, b) { return a.curso.localeCompare(b.curso); });
+
+    // Normalizar indiceRaw a porcentaje 0-100
+    const maxRaw = Math.max.apply(null, datos.map(function(d) { return d.indiceRaw || 0; })) || 1;
+    datos.forEach(function(d) {
+        d.indice = Math.round((d.indiceRaw / maxRaw) * 100);
+    });
 
     return datos;
 }
@@ -8523,7 +8534,7 @@ function renderGraficoCursos() {
         return;
     }
 
-    const maxIndice = Math.max.apply(null, datos.map(function(d) { return d.indice; })) || 1;
+    const maxIndice = 100; // indice ya está normalizado a 0-100%
 
     tbody.innerHTML = datos.map(function(d, i) {
         if (d.total === 0 && d.afectados === 0) {
@@ -8538,13 +8549,13 @@ function renderGraficoCursos() {
         }
 
         // Barra de progreso para índice de riesgo
-        const pct = Math.round((d.indice / maxIndice) * 100);
+        const pct = d.indice; // ya es 0-100%
         const riesgoColor = pct >= 70 ? '#ef4444' : pct >= 40 ? '#eab308' : '#22c55e';
         const riesgoBarra =
             '<div style="display:flex;align-items:center;gap:6px;">' +
             '<div style="flex:1;background:#e5e7eb;border-radius:4px;height:8px;min-width:60px;">' +
             '<div style="width:' + pct + '%;background:' + riesgoColor + ';height:8px;border-radius:4px;"></div></div>' +
-            '<span style="font-size:0.85em;font-weight:700;color:' + riesgoColor + ';min-width:28px;">' + d.indice + '</span></div>';
+            '<span style="font-size:0.85em;font-weight:700;color:' + riesgoColor + ';min-width:36px;">' + pct + '%</span></div>';
 
         const bg = i % 2 === 0 ? 'white' : '#f9fafb';
         return '<tr style="background:' + bg + ';">' +
