@@ -322,7 +322,82 @@ function crearModalIncidencias() {
                 </div>
                 <div class="form-group">
                     <label>Seguimiento UGC</label>
-                    <textarea id="seguimientoUGC"></textarea>
+                    
+                    <!-- Desplegable de acciones de seguimiento -->
+                    <div id="accionesSeguimientoPanel" style="border:1px solid #d1d5db;border-radius:8px;margin-bottom:8px;background:white;overflow:hidden;">
+                        <button type="button" onclick="toggleAccionesSeguimiento()"
+                            style="width:100%;padding:10px 14px;background:#1e3a5f;color:white;border:none;cursor:pointer;text-align:left;font-size:0.9em;font-weight:600;display:flex;justify-content:space-between;align-items:center;">
+                            <span>☑️ Seleccionar acciones de seguimiento</span>
+                            <span id="accionesChevron" style="transition:transform 0.2s;">▼</span>
+                        </button>
+                        <div id="accionesDropdown" style="display:none;max-height:360px;overflow-y:auto;padding:10px 14px;">
+                            
+                            <!-- FASE 1 -->
+                            <div style="font-weight:700;color:#1e3a5f;font-size:0.82em;margin:8px 0 6px;padding-bottom:4px;border-bottom:2px solid #e5e7eb;">📋 FASE 1 — Recepción y Registro del Caso</div>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Recibí el reporte de la falta de parte de un docente, directivo o miembro de la comunidad educativa." style="margin-top:2px;accent-color:#1e3a5f;"> Recibí el reporte de la falta de parte de un docente, directivo o miembro de la comunidad educativa.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Clasifiqué la falta según el Manual de Convivencia: leve, grave o muy grave." style="margin-top:2px;accent-color:#1e3a5f;"> Clasifiqué la falta según el Manual de Convivencia: leve, grave o muy grave.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Abrí o actualicé el expediente disciplinario del estudiante, registrando fecha, descripción de los hechos y quien reportó." style="margin-top:2px;accent-color:#1e3a5f;"> Abrí o actualicé el expediente disciplinario del estudiante, registrando fecha, descripción de los hechos y quien reportó.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Verifiqué si el estudiante tenía antecedentes disciplinarios previos que lo clasificaran como reincidente." style="margin-top:2px;accent-color:#1e3a5f;"> Verifiqué si el estudiante tenía antecedentes disciplinarios previos que lo clasificaran como reincidente.</label>
+
+                            <!-- FASE 2 -->
+                            <div style="font-weight:700;color:#1e3a5f;font-size:0.82em;margin:12px 0 6px;padding-bottom:4px;border-bottom:2px solid #e5e7eb;">👨‍👩‍👦 FASE 2 — Notificación a la Familia</div>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Cité por escrito a los padres, madres o tutores del estudiante para informarles formalmente de los hechos." style="margin-top:2px;accent-color:#1e3a5f;"> Cité por escrito a los padres, madres o tutores del estudiante para informarles formalmente de los hechos.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Notifiqué de forma confidencial a los representantes legales del estudiante afectado, en los casos que involucraron una víctima." style="margin-top:2px;accent-color:#1e3a5f;"> Notifiqué de forma confidencial a los representantes legales del estudiante afectado, en los casos que involucraron una víctima.</label>
+
+                            <!-- FASE 3 -->
+                            <div style="font-weight:700;color:#1e3a5f;font-size:0.82em;margin:12px 0 6px;padding-bottom:4px;border-bottom:2px solid #e5e7eb;">🗣️ FASE 3 — Proceso Dialógico con el Estudiante</div>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Sostuve un diálogo reflexivo con el estudiante, permitiéndole presentar su versión de los hechos." style="margin-top:2px;accent-color:#1e3a5f;"> Sostuve un diálogo reflexivo con el estudiante, permitiéndole presentar su versión de los hechos.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Escuché sus descargos antes de aplicar cualquier medida correctiva o sanción." style="margin-top:2px;accent-color:#1e3a5f;"> Escuché sus descargos antes de aplicar cualquier medida correctiva o sanción.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Orienté al estudiante sobre las normas que incumplió, los artículos del Manual de Convivencia que aplican y las consecuencias de su conducta." style="margin-top:2px;accent-color:#1e3a5f;"> Orienté al estudiante sobre las normas que incumplió, los artículos del Manual de Convivencia que aplican y las consecuencias de su conducta.</label>
+
+                            <!-- FASE 4 -->
+                            <div style="font-weight:700;color:#1e3a5f;font-size:0.82em;margin:12px 0 6px;padding-bottom:4px;border-bottom:2px solid #e5e7eb;">⚖️ FASE 4 — Aplicación de la Medida Correctiva o Sanción</div>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Apliqué la medida correctiva o sanción correspondiente al tipo de falta, conforme a los artículos 38, 43 y 48 del Manual de Convivencia." style="margin-top:2px;accent-color:#1e3a5f;"> Apliqué la medida correctiva o sanción correspondiente al tipo de falta, conforme a los artículos 38, 43 y 48 del Manual de Convivencia.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Escalé la sanción conforme a los artículos 39 y 44, en los casos donde se identificó reincidencia." style="margin-top:2px;accent-color:#1e3a5f;"> Escalé la sanción conforme a los artículos 39 y 44, en los casos donde se identificó reincidencia.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Documenté la sanción aplicada con todos sus detalles en el expediente del estudiante." style="margin-top:2px;accent-color:#1e3a5f;"> Documenté la sanción aplicada con todos sus detalles en el expediente del estudiante.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Obtuve la firma del estudiante y sus representantes como constancia de notificación y conocimiento de la sanción." style="margin-top:2px;accent-color:#1e3a5f;"> Obtuve la firma del estudiante y sus representantes como constancia de notificación y conocimiento de la sanción.</label>
+
+                            <!-- FASE 5 -->
+                            <div style="font-weight:700;color:#1e3a5f;font-size:0.82em;margin:12px 0 6px;padding-bottom:4px;border-bottom:2px solid #e5e7eb;">🤝 FASE 5 — Acuerdos y Compromisos</div>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Establecí acuerdos concretos y verificables de mejora de conducta con el estudiante y su familia." style="margin-top:2px;accent-color:#1e3a5f;"> Establecí acuerdos concretos y verificables de mejora de conducta con el estudiante y su familia.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Fijé plazos de evaluación de dichos compromisos, vinculados al cierre de cada período escolar." style="margin-top:2px;accent-color:#1e3a5f;"> Fijé plazos de evaluación de dichos compromisos, vinculados al cierre de cada período escolar.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Registré todos los acuerdos y firmas en el expediente disciplinario." style="margin-top:2px;accent-color:#1e3a5f;"> Registré todos los acuerdos y firmas en el expediente disciplinario.</label>
+
+                            <!-- FASE 6 -->
+                            <div style="font-weight:700;color:#1e3a5f;font-size:0.82em;margin:12px 0 6px;padding-bottom:4px;border-bottom:2px solid #e5e7eb;">🧠 FASE 6 — Acompañamiento Psicológico y Pedagógico</div>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Remití al estudiante al Departamento de Orientación y Psicología cuando la falta lo ameritó." style="margin-top:2px;accent-color:#1e3a5f;"> Remití al estudiante al Departamento de Orientación y Psicología cuando la falta lo ameritó.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Garanticé atención psicológica prioritaria al estudiante afectado en los casos que involucraron una víctima." style="margin-top:2px;accent-color:#1e3a5f;"> Garanticé atención psicológica prioritaria al estudiante afectado en los casos que involucraron una víctima.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Coordiné con los docentes el seguimiento académico del estudiante durante el proceso disciplinario." style="margin-top:2px;accent-color:#1e3a5f;"> Coordiné con los docentes el seguimiento académico del estudiante durante el proceso disciplinario.</label>
+
+                            <!-- FASE 7 -->
+                            <div style="font-weight:700;color:#1e3a5f;font-size:0.82em;margin:12px 0 6px;padding-bottom:4px;border-bottom:2px solid #e5e7eb;">📢 FASE 7 — Comunicación Institucional</div>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Informé por escrito a la Dirección del Centro de todas las sanciones por faltas graves y muy graves." style="margin-top:2px;accent-color:#1e3a5f;"> Informé por escrito a la Dirección del Centro de todas las sanciones por faltas graves y muy graves.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Notifiqué al Departamento de Atención a la Diversidad del Distrito Educativo con copia al Director(a), en los casos que así lo requirieron, conforme al Art. 52." style="margin-top:2px;accent-color:#1e3a5f;"> Notifiqué al Departamento de Atención a la Diversidad del Distrito Educativo con copia al Director(a), en los casos que así lo requirieron, conforme al Art. 52.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Informé a la Dirección sobre la pertinencia de activar mecanismos legales bajo la Ley 136-03, en los casos que pudieron constituir ilícitos penales." style="margin-top:2px;accent-color:#1e3a5f;"> Informé a la Dirección sobre la pertinencia de activar mecanismos legales bajo la Ley 136-03, en los casos que pudieron constituir ilícitos penales.</label>
+
+                            <!-- FASE 8 -->
+                            <div style="font-weight:700;color:#1e3a5f;font-size:0.82em;margin:12px 0 6px;padding-bottom:4px;border-bottom:2px solid #e5e7eb;">🔁 FASE 8 — Seguimiento y Cierre del Caso</div>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Monitoreé el comportamiento del estudiante durante las semanas siguientes a la sanción." style="margin-top:2px;accent-color:#1e3a5f;"> Monitoreé el comportamiento del estudiante durante las semanas siguientes a la sanción.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Evalué al cierre de cada período el cumplimiento de los compromisos establecidos." style="margin-top:2px;accent-color:#1e3a5f;"> Evalué al cierre de cada período el cumplimiento de los compromisos establecidos.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Escalé las medidas y convoqué nuevamente a la familia en los casos donde se identificó incumplimiento." style="margin-top:2px;accent-color:#1e3a5f;"> Escalé las medidas y convoqué nuevamente a la familia en los casos donde se identificó incumplimiento.</label>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" value="Cerré el caso en el expediente una vez verificada la mejora de conducta, dejando constancia escrita de dicho cierre." style="margin-top:2px;accent-color:#1e3a5f;"> Cerré el caso en el expediente una vez verificada la mejora de conducta, dejando constancia escrita de dicho cierre.</label>
+
+                            <!-- OTROS -->
+                            <div style="font-weight:700;color:#1e3a5f;font-size:0.82em;margin:12px 0 6px;padding-bottom:4px;border-bottom:2px solid #e5e7eb;">✏️ Otros</div>
+                            <label style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;cursor:pointer;font-size:0.88em;font-weight:normal;"><input type="checkbox" class="accion-check" id="checkOtros" value="__otros__" style="margin-top:2px;accent-color:#1e3a5f;" onchange="toggleOtrosInput(this)"> Otra acción no listada (especificar abajo)</label>
+                            <textarea id="otrosTexto" placeholder="Describe la acción adicional..." style="display:none;width:100%;margin-top:6px;padding:8px;border:1px solid #d1d5db;border-radius:6px;font-size:0.88em;resize:vertical;min-height:60px;"></textarea>
+
+                            <!-- Botón aplicar -->
+                            <div style="padding-top:12px;border-top:1px solid #e5e7eb;margin-top:10px;">
+                                <button type="button" onclick="aplicarAccionesSeguimiento()"
+                                    style="width:100%;padding:9px;background:#1e3a5f;color:white;border:none;border-radius:6px;font-size:0.88em;font-weight:600;cursor:pointer;">
+                                    ✅ Aplicar acciones seleccionadas
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <textarea id="seguimientoUGC" placeholder="Las acciones seleccionadas aparecerán aquí. También puedes escribir directamente."></textarea>
                     <button type="button" class="btn-regimen" onclick="toggleRegimenPanel()">
                         📚 Consultar Régimen Disciplinario
                     </button>
@@ -8472,4 +8547,56 @@ function renderGraficoCursos() {
             '</td>' +
             '<td style="padding:10px 14px;">' + riesgoBarra + '</td></tr>';
     }).join('');
+}
+
+// ============================================================
+// PANEL DE ACCIONES DE SEGUIMIENTO UGC
+// ============================================================
+
+function toggleAccionesSeguimiento() {
+    const dropdown = document.getElementById('accionesDropdown');
+    const chevron  = document.getElementById('accionesChevron');
+    if (!dropdown) return;
+    const abierto = dropdown.style.display !== 'none';
+    dropdown.style.display = abierto ? 'none' : 'block';
+    if (chevron) chevron.style.transform = abierto ? '' : 'rotate(180deg)';
+}
+
+function toggleOtrosInput(checkbox) {
+    const textarea = document.getElementById('otrosTexto');
+    if (!textarea) return;
+    textarea.style.display = checkbox.checked ? 'block' : 'none';
+    if (!checkbox.checked) textarea.value = '';
+}
+
+function aplicarAccionesSeguimiento() {
+    const checks   = document.querySelectorAll('.accion-check:checked');
+    const ugcField = document.getElementById('seguimientoUGC');
+    if (!ugcField) return;
+
+    const acciones = [];
+    checks.forEach(function(chk) {
+        if (chk.value === '__otros__') {
+            const texto = (document.getElementById('otrosTexto') || {}).value || '';
+            if (texto.trim()) acciones.push(texto.trim());
+        } else {
+            acciones.push(chk.value);
+        }
+    });
+
+    if (acciones.length === 0) {
+        alert('Selecciona al menos una acción.');
+        return;
+    }
+
+    // Agregar al texto existente sin borrar lo que ya había
+    const existente = ugcField.value.trim();
+    const nuevas    = acciones.map(function(a, i) { return (i + 1) + '. ' + a; }).join('\n');
+    ugcField.value  = existente ? existente + '\n' + nuevas : nuevas;
+
+    // Cerrar el panel y limpiar checks
+    toggleAccionesSeguimiento();
+    document.querySelectorAll('.accion-check').forEach(function(c) { c.checked = false; });
+    const otrosTexto = document.getElementById('otrosTexto');
+    if (otrosTexto) { otrosTexto.style.display = 'none'; otrosTexto.value = ''; }
 }
